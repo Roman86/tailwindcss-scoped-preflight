@@ -12,6 +12,10 @@
     "build": "microbundle --target node -f modern,esm,cjs",
     "dev": "microbundle --target node -f modern,esm,cjs -w"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Roman86/tailwindcss-scoped-preflight.git"
+  },
   "keywords": [
     "tailwind",
     "tailwindcss",
