@@ -1,49 +1,45 @@
-import {withOptions} from 'tailwindcss/plugin.js';
-import {readFileSync} from 'fs';
+import { withOptions } from 'tailwindcss/plugin.js';
+import { readFileSync } from 'fs';
 import postcss from 'postcss';
 
 interface PluginOptions {
-  preflightSelector: string;
-  enable?: boolean;
-  disableCorePreflight?: boolean;
+  cssSelector: string;
+  mode?: 'matched only' | 'except matched';
 }
 
 export const scopedPreflightStyles = withOptions<PluginOptions>(
-  ({ enable = true, preflightSelector: preflightSelector }) =>
+  ({ mode, cssSelector }) =>
     ({ addBase, corePlugins }) => {
-      if (!enable) {
-        return () => undefined;
+      const baseCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
+      const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
+
+      if (!cssSelector) {
+        throw new Error('TailwindCssScopedPreflightPlugin: cssSelector options is not provided');
       }
-      const preflightCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
-      if (!preflightSelector) {
-        throw new Error(
-          'TailwindCssScopedPreflightPlugin: selector to manually enable the TailwindCss preflight styles is not provided',
-        );
-      }
+
       if (corePlugins('preflight')) {
         throw new Error(
-          `TailwindCssScopedPreflightPlugin: set corePlugins.preflight config option (TailwindCSS) to false or explicitly tell tailwindcss-scoped-preflight plugin to do so by using the disableCorePreflight option`,
+          `TailwindCssScopedPreflightPlugin: TailwindCSS corePlugins.preflight config option must be set to false`,
         );
       }
 
-      const preflightStyles = postcss.parse(readFileSync(preflightCssPath, 'utf8'));
-
-      // Scope the selectors to specific components
-      preflightStyles.walkRules((rule) => {
-        rule.selectors = rule.selectors.map(
-          (s) => `${s}:where(${preflightSelector},${preflightSelector} *)`,
-        );
+      baseCssStyles.walkRules((rule) => {
+        rule.selectors = rule.selectors.map((s) => {
+          if (mode === 'except matched') {
+            return `${s}:where(:not(${cssSelector} *))`;
+          } else {
+            // matched only
+            return `${s}:where(${cssSelector},${cssSelector} *)`;
+          }
+        });
         rule.selector = rule.selectors.join(',\n');
       });
 
-      addBase(preflightStyles.nodes as any);
+      addBase(baseCssStyles.nodes as any);
     },
-  ({ enable = true, disableCorePreflight }) =>
-    enable && disableCorePreflight
-      ? {
-          corePlugins: {
-            preflight: false,
-          },
-        }
-      : {},
+  () => ({
+    corePlugins: {
+      preflight: false,
+    },
+  }),
 );
