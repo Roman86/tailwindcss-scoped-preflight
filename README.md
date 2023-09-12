@@ -53,12 +53,13 @@ exports.default = config;
 ```tsx
 // # MyTailwindButton.tsx
 
-import { type PropsWithChildren } from 'react';
-    
-export function MyTailwindButton({ children }: PropsWithChildren): ReactElement {
+import {type PropsWithChildren} from 'react';
+
+export function MyTailwindButton({children}: PropsWithChildren): ReactElement {
   return (
-    <button className={'twp'}> // this button will have no default border and background because of Tailwind CSS
-      preflight styles
+    <button className={'twp'}> 
+      // this button will have no default border and background
+      // because of Tailwind CSS preflight styles
       {children}
     </button>
   );
