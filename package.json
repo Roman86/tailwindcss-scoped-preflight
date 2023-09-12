@@ -1,0 +1,34 @@
+{
+  "name": "tailwindcss-scoped-preflight",
+  "version": "1.0.1",
+  "description": "To avoid style conflicts (CSS collisions/interference side effects) when using Tailwind CSS with other UI libraries like Antd, Vuetify etc.",
+  "type": "module",
+  "source": "src/index.ts",
+  "module": "dist/plugin.esm.js",
+  "main": "dist/plugin.cjs",
+  "types": "dist/index.d.ts",
+  "exports": "./dist/plugin.mjs",
+  "scripts": {
+    "build": "microbundle --target node -f modern,esm,cjs",
+    "dev": "microbundle --target node -f modern,esm,cjs -w"
+  },
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "plugin",
+    "preflight",
+    "scoped",
+    "local",
+    "selector",
+    "antd"
+  ],
+  "author": "Roman Kozodoi",
+  "license": "ISC",
+  "devDependencies": {
+    "microbundle": "^0.15.1"
+  },
+  "peerDependencies": {
+    "postcss": "^8",
+    "tailwindcss": "^3"
+  }
+}
