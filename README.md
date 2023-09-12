@@ -111,15 +111,14 @@ exports.default = config;
 #### Apply the selector to conflicting components only 
 
 ```tsx
-// # MyTailwindButton.tsx
+// # MyButton.tsx
 
 import { type PropsWithChildren } from 'react';
     
-export function MyTailwindButton({ children }: PropsWithChildren): ReactElement {
+export function MyButton({ children }: PropsWithChildren): ReactElement {
   return (
     <span> className={'notw'}>
       <button>
-        preflight styles
         {children}
       </button>
     </span>
@@ -130,7 +129,7 @@ export function MyTailwindButton({ children }: PropsWithChildren): ReactElement 
 * Or make a wrapper disable base styles for all its children
 
 ```tsx
-// # TailwindPreflightStyles
+// # DisableTailwindBaseStyles.tsx
 
 import { type PropsWithChildren } from 'react';
 
