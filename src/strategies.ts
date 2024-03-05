@@ -32,7 +32,7 @@ export const isolateInsideOfContainer: SelectorBasedStrategy =
       ? [containerSelectors].flat().join(',')
       : [containerSelectors]
           .flat()
-          .map((s) => `${s} ${ruleSelector}`)
+          .map((s) => `${ruleSelector}:where(${s},${s} *)`)
           .join(','));
 
 export const isolateOutsideOfContainer: SelectorBasedStrategy =
