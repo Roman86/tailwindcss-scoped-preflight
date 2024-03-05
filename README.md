@@ -29,7 +29,7 @@ For ease of use, there are 3 pre-bundled isolation strategies available (as name
 
 > Although all the strategies allow you to specify a number of selectors - it's recommended to use one short ruleSelector to avoid CSS bloat as selectors repeat many times in the generated CSS.
 
-🔨 If none of these strategies work for your case, or something isn't perfect - you can create your own strategy (examples below).
+🔨 If none of these strategies work for your case, or something isn't perfect - you can [create your own strategy](#your-owncustom-isolation-strategy).
 
 ## 1. Install
 
@@ -41,8 +41,8 @@ npm i tailwindcss-scoped-preflight
 
 #### Update your Tailwind CSS configuration
 
-Following example is pretty comprehensive and shows all the available options, but you can use just the `isolationStrategy` with a single selector if you don't need to fine tune the transformation.
-You can find minimalistic examples for other strategies below.
+Following example is pretty comprehensive and shows all the available options, but you can use just the `isolationStrategy` option with a single selector if you don't need to fine tune the transformation.
+You can find minimalistic examples for other strategies [below](#isolate-inside-of-container).
 
 ```javascript
 // # tailwind.config.js
@@ -115,8 +115,6 @@ export function MyTailwindButton({ children }: PropsWithChildren): ReactElement 
   );
 }
 ```
-
-Above example is for the `isolateForComponents` strategy, but you can use `isolateInsideOfContainer` and `isolateOutsideOfContainer` as well.
 
 ## Other strategies examples
 
