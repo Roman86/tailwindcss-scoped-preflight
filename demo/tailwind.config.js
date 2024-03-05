@@ -1,31 +1,38 @@
-import { matchedOnly, scopedPreflightStyles } from "../dist/plugin.esm";
+import { isolateForComponents, scopedPreflightStyles } from '../dist/plugin';
 
 module.exports = {
-  content: ["**/*.html"],
+  content: ['**/*.html'],
   plugins: [
     scopedPreflightStyles({
-      cssSelector: matchedOnly(".twp", {
-        // skipping and removing these selectors makes no sense, but just for a test
-        remove: ["html", ":host", "*"],
-        ignore: ["body", ":before"],
-      }),
+      isolationStrategy: isolateForComponents(
+        [
+          '.twp',
+          '.comp',
+        ], // selector or array of selectors
+        {
+          // ignore: ["html", ":host", "*"], // these will not be affected by the transformation
+          // remove: [":before", ":after"], // this will remove mentioned rules completely
+        },
+      ),
+
       // or make your own rules transformation
-      // cssSelector: (selector) =>
+      // isolationStrategy: ({ selector }) =>
       //   selector === "*"
-      //     ? "" // removes the rule (for particular selector only)
+      //     ? "" // removes the rule (specified selector only)
       //     : ["html", ":host"].includes(selector)
       //       ? selector // keeps the original selector
-      //       : matchedOnly(".twp")(selector), // generates a new selector with selected behaviour (matchedOnly mode)
+      //       : enableForSelector(".twp")(selector), // otherwise, transforms selector as per selected behaviour (scoped to .twp)
 
       // it's also possible to filter out some properties
-      cssRulePropsFilter: ({ selectorSet, property }) =>
-        !(selectorSet.has("body") && property === "line-height"), // removes line-height reset from body
+      propsFilter: ({ selectorSet, property, value }) =>
+        ![
+          // removes the margin reset from a body rule
+          selectorSet.has('body') && ['margin'].includes(property),
+          // removes the box-sizing: border-box whenever it's found
+          property === 'box-sizing' && value === 'border-box',
+          // removes the font-family (except inherit) from all the rules
+          property === 'font-family' && value !== 'inherit',
+        ].some(Boolean), // yep, "some" approach is a bit slower because it will evaluate all array conditions anyway, but it's more readable without || operators
     }),
   ],
-  theme: {
-    fontFamily: {
-      display: ["Oswald"],
-      body: ['"Open Sans"'],
-    },
-  },
 };

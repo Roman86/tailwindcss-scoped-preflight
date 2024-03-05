@@ -14,8 +14,8 @@
   },
   "scripts": {
     "build": "microbundle --target node -f modern,esm,cjs",
-    "demo": "tailwindcss -c ./demo/tailwind.config.js -i ./demo/stylesin.css -o ./demo/stylesout.css",
-    "dev": "microbundle --target node -f modern,esm,cjs -w"
+    "dev": "microbundle --target node -f modern,esm,cjs -w",
+    "demo": "tailwindcss -i ./demo/stylesin.css -o ./demo/stylesout.css -w"
   },
   "repository": {
     "type": "git",
@@ -35,13 +35,14 @@
   "license": "ISC",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6",
-    "eslint": "^8.57.0",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
     "eslint-plugin-react": "^7.34.0",
     "microbundle": "^0.15.1",
     "prettier": "^3.2.5",
-    "prettier-plugin-multiline-arrays": "^3.0.4"
+    "prettier-plugin-multiline-arrays": "^3.0.4",
+    "tsconfig-paths": "^4.2.0"
   },
   "peerDependencies": {
     "postcss": "^8",

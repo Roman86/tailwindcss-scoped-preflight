@@ -8,138 +8,191 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 
 ### How
 
-This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
+This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS ruleSelector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
+Starting from version 3 it provides a powerful configuration to precisely control selectors, flexibly remove some rules or even particular CSS properties (if you have some specific conflicts).
 
-There are 2 modes available:
-* `matched only` (default) - only matched selectors will be styled with Tailwind CSS base styles
-* `except matched` - everything will be styled with Tailwind CSS as usual, except matched selectors children
+There are 3 pre-bundled isolation strategies available (as named imports), but you can define your own as well (example below):
 
-## Installation
+- `isolateInsideOfContainer` - use it when you have all the tailwind-powered stuff **isolated under some root container**. This will protect from preflight all the DOM outside of it.
+- `isolateOutsideOfContainer` - use it when you have tailwind everywhere as usual, but you want to **exclude some part of the DOM** from preflight styles.
+- `isolateForComponents` - use it when you want preflight styles to be applied **only to particular elements** immediately (without extra roots or wrappers). Good for components - just apply specified class to your component and use it anywhere.
+
+Although all the strategies allow you to specify a number of selectors - it's recommended to use one short ruleSelector to avoid CSS bloat as selectors repeat many times in the generated CSS.
+
+## 1. Install
 
 ```bash
 npm i tailwindcss-scoped-preflight
 ```
 
-## Use case 1 - matched only
-Apply Tailwind base styles explicitly **to particular selectors only**
+## 2. Inject the plugin with the strategy of choice
 
 #### Update your Tailwind CSS configuration
 
-```javascript 
+Following example is pretty comprehensive and shows all the available options, but you can use just the `isolationStrategy` with a single selector if you don't need to fine tune the transformation.
+You can find minimalistic examples for other strategies below.
+
+```javascript
 // # tailwind.config.js
 
-const { scopedPreflightStyles } = require('tailwindcss-scoped-preflight');
+import {
+  scopedPreflightStyles,
+  isolateForComponents, // there are also isolateInsideOfContainer and isolateOutsideOfContainer
+} from 'tailwindcss-scoped-preflight';
 
 /** @type {import("tailwindcss").Config} */
 const config = {
-    // ... your Tailwind CSS config
-    plugins: [
-        // ... other plugins
-        scopedPreflightStyles({
-            cssSelector: '.twp', // or .tailwind-preflight or even [data-twp=true] - any valid CSS selector of your choice
-            mode: 'matched only', // it's the default
-        }),
-    ],
+  // ... your Tailwind CSS config
+  plugins: [
+    // ... other plugins
+    scopedPreflightStyles({
+      isolationStrategy: isolateForComponents(
+        // ruleSelector string or array of selectors - the less/shorter - the better
+        [
+          '.twp',
+          '.comp',
+        ],
+        // every strategy provides the same options (optional) to fine tune the transformation
+        {
+          // ignore: ["html", ":host", "*"], // when used, these will not be affected by the transformation
+          // remove: [":before", ":after"], // this can remove mentioned rules completely
+        },
+      ),
+      
+      // or you can make your own rules isolation strategy - it's basically a function accepting original ruleSelector and returning a transformed one
+      // isolationStrategy: (ruleSelector) =>
+      //   ruleSelector === '*'
+      //     ? '' // returning empty string removes the rule
+      //     : ['html', ':host'].includes(ruleSelector)
+      //       ? ruleSelector // this way we can keeps the original ruleSelector
+      //       : isolateForComponents(".twp")(ruleSelector), // otherwise, transforms it as per strategy (just for the fallback example)
+
+      // it's also possible to filter out some properties
+      propsFilter: ({ selectorSet, property, value }) =>
+        ![
+          // removes the margin reset from a body rule
+          selectorSet.has('body') && ['margin'].includes(property),
+          // removes the box-sizing: border-box whenever it's found
+          property === 'box-sizing' && value === 'border-box',
+          // removes the font-family (except inherit) from all the rules
+          property === 'font-family' && value !== 'inherit',
+        ].some(Boolean), // yep, "some" approach is a bit slower because it will evaluate all array conditions anyway, but it's more readable without || operators
+    }),
+  ],
 };
 
 exports.default = config;
 ```
 
-#### Apply the base Tailwind styles explicitly wherever you want them to be
-    
-* To isolate Tailwind base styles within the component
+## 3. Use your ruleSelector according to the strategy
 
 ```tsx
 // # MyTailwindButton.tsx
 
-import {type PropsWithChildren} from 'react';
+import { type PropsWithChildren } from 'react';
 
-export function MyTailwindButton({children}: PropsWithChildren): ReactElement {
+export function MyTailwindButton({ children }: PropsWithChildren): ReactElement {
   return (
-    <button className={'twp'}> 
-      // this button will have no default border and background
-      // because of Tailwind CSS preflight styles
+    <button className={'comp'}>
+      {/* this button won't have a default border and background
+      because of Tailwind CSS preflight styles applied to the elements
+      with the .comp class (as per the configuration).
+      Other buttons will have their original/default styles */}
       {children}
     </button>
   );
 }
 ```
 
-* Or make a wrapper to style all its children
+Above example is for the `isolateForComponents` strategy, but you can use `isolateInsideOfContainer` and `isolateOutsideOfContainer` as well.
 
-```tsx
-// # TailwindPreflightStyles
+## Other strategies examples
 
-import { type PropsWithChildren } from 'react';
+### Isolate Inside of Container
 
-export function TailwindPreflightStyles({ children }: PropsWithChildren): ReactElement {
-  return (
-    <div className={'twp'}> // when mode is 'matched only' - all the children will have default Tailwind CSS styles applied, but not components outside of this wrapper
-      { children }
-    </div>
-  );
-}
-```
-
-
-## Use case 2 - except matched
-If you want tailwind base styles to be applied everywhere (as usual) except selected elements
-
-#### Update your Tailwind CSS configuration
-
-```javascript 
+```javascript
 // # tailwind.config.js
 
-const { scopedPreflightStyles } = require('tailwindcss-scoped-preflight');
+import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
 
 /** @type {import("tailwindcss").Config} */
 const config = {
-    // ... your Tailwind CSS config
-    plugins: [
-        // ... other plugins
-        scopedPreflightStyles({
-            cssSelector: '.notw', // or .notailwind or even [data-tailwind=false] - any valid CSS selector of your choice
-            mode: 'except matched',
-        }),
-    ],
+  // ... your Tailwind CSS config
+  plugins: [
+    // ... other plugins
+    scopedPreflightStyles({
+      // pretty minimalistic example. Same options as in the previous example are available
+      isolationStrategy: isolateInsideOfContainer('#tw-app'),
+    }),
+  ],
 };
 
 exports.default = config;
 ```
 
-#### Apply the selector to conflicting components only 
+### Isolate Outside of Container
 
-```tsx
-// # MyButton.tsx
+```javascript
+// # tailwind.config.js
 
-import { type PropsWithChildren } from 'react';
-    
-export function MyButton({ children }: PropsWithChildren): ReactElement {
-  return (
-    <span> className={'notw'}>
-      <button>
-        {children}
-      </button>
-    </span>
-  );
-}
+import { scopedPreflightStyles, isolateOutsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+/** @type {import("tailwindcss").Config} */
+const config = {
+  // ... your Tailwind CSS config
+  plugins: [
+    // ... other plugins
+    scopedPreflightStyles({
+      // pretty minimalistic example. Same options as in the previous example are available
+      isolationStrategy: isolateOutsideOfContainer('#antd-root'),
+    }),
+  ],
+};
+
+exports.default = config;
 ```
 
-* Or make a wrapper disable base styles for all its children
+### Your own/custom isolation strategy
 
-```tsx
-// # DisableTailwindBaseStyles.tsx
+```javascript
+// # tailwind.config.js
 
-import { type PropsWithChildren } from 'react';
+import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
 
-export function DisableTailwindBaseStyles({ children }: PropsWithChildren): ReactElement {
-  return (
-    <div className={'notw'}>
-      { children }
-    </div>
-  );
-}
+/** @type {import("tailwindcss").Config} */
+const config = {
+  // ... your Tailwind CSS config
+  plugins: [
+    // ... other plugins
+    scopedPreflightStyles({
+      // it's basically a function accepting original ruleSelector and returning a transformed one
+      isolationStrategy: ({ ruleSelector }) =>
+        ruleSelector === '*'
+          ? '' // returning empty string removes the rule
+          : [
+                'html',
+                ':host',
+                'body',
+              ].includes(ruleSelector)
+            ? `${ruleSelector} .twp` // some custom transformation for html, :host and body
+            : isolateForComponents('.twp')(ruleSelector), // otherwise, transform it as per components strategy (just for example)
+
+      // just for demo purpose - let's also filter out some properties
+      propsFilter: ({ selectorSet, property, value }) =>
+        ![
+          // removes the margin reset from a body rule
+          selectorSet.has('body') && ['margin'].includes(property),
+          // removes the box-sizing: border-box whenever it's found
+          property === 'box-sizing' && value === 'border-box',
+          // removes the font-family (except inherit) from all the rules
+          property === 'font-family' && value !== 'inherit',
+        ].some(Boolean), // yep, "some" approach is a bit slower because it will evaluate all array conditions anyway, but it's more readable without || operators
+    }),
+  ],
+};
+
+exports.default = config;
 ```
 
-> Please note that long `cssSelector` will generate larger CSS boilerplate - so it's recommended to keep it short
+> Once again - keep custom selectors short, and prefer using just one ruleSelector (should be enough) - it will result in smaller CSS

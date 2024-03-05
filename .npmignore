@@ -5,7 +5,7 @@ dist/
 .github/
 .idea/
 .editorconfig
-.eslintrc
+.eslintrc.mjs
 .gitignore
 .prettierrc.json
 jest.config.js

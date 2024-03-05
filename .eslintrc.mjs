@@ -1,26 +1,26 @@
-module.exports = {
+const jsRules = {
+  semi: 'off',
+  'import/no-webpack-loader-syntax': 'warn',
+  'comma-dangle': [
+    1,
+    'always-multiline',
+  ],
+};
+
+const extendsList = (isTs) =>
+  [
+    'eslint:recommended',
+    isTs && 'standard-with-typescript',
+    'prettier',
+  ].filter(Boolean);
+
+export default {
   env: {
-    jest: true,
     browser: true,
     es2021: true,
   },
   root: true, // for @typescript-eslint
-  plugins: [
-    '@typescript-eslint',
-    'promise',
-    'react',
-  ],
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'standard-with-typescript',
-    'prettier',
-  ],
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: ['./tsconfig.json'],
@@ -31,16 +31,20 @@ module.exports = {
       arrowFunctions: true,
     },
   },
-  rules: {
-    // 'semi': 'off', // using react rules
-    'import/no-webpack-loader-syntax': 'warn',
-    'comma-dangle': [
-      1,
-      'always-multiline',
-    ],
-    'react/jsx-uses-react': 'error',
-    'react/jsx-uses-vars': 'error',
+  plugins: [
+    '@typescript-eslint',
+    'promise',
+  ],
+  extends: extendsList(false),
+  settings: {},
+  globals: {
+    google: 'readonly',
   },
+  ignorePatterns: [
+    '**/*.d.ts',
+    'node_modules',
+  ],
+  rules: jsRules,
   overrides: [
     {
       // enable the rule specifically for TypeScript files
@@ -50,7 +54,9 @@ module.exports = {
         '*.cts',
         '*.tsx',
       ],
+      extends: extendsList(true),
       rules: {
+        ...jsRules,
         '@typescript-eslint/explicit-function-return-type': [
           'error',
           {

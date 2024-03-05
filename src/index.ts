@@ -1,8 +1,7 @@
-import { withOptions } from "tailwindcss/plugin.js";
-import postcss from "postcss";
-import { type CSSRuleObject } from "tailwindcss/types/config.js";
-import { readFileSync } from "fs";
-import { booleanFilter } from "./booleanFilter.js";
+import { withOptions } from 'tailwindcss/plugin.js';
+import postcss from 'postcss';
+import { type CSSRuleObject } from 'tailwindcss/types/config.js';
+import { readFileSync } from 'fs';
 
 interface PropsFilterInput {
   selectorSet: Set<string>;
@@ -10,65 +9,70 @@ interface PropsFilterInput {
   value: any;
 }
 
-export type CustomCssSelector = (ruleSelector: string) => string;
+export type CSSRuleSelectorTransformer = (info: { ruleSelector: string }) => string;
 
 interface PluginOptions {
-  cssSelector: CustomCssSelector;
-  cssRulePropsFilter?: (input: PropsFilterInput) => boolean | undefined;
+  isolationStrategy: CSSRuleSelectorTransformer;
+  propsFilter?: (input: PropsFilterInput) => boolean | undefined;
 }
 
 export const scopedPreflightStyles = withOptions<PluginOptions>(
-  ({ cssSelector, cssRulePropsFilter }) =>
+  ({ isolationStrategy, propsFilter }) =>
     ({ addBase, corePlugins }) => {
-      const baseCssPath = require.resolve("tailwindcss/lib/css/preflight.css");
-      const baseCssStyles = postcss.parse(
-        readFileSync(baseCssPath, "utf8") as string,
-      );
+      const baseCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
+      const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
 
-      if (typeof cssSelector !== "function") {
+      if (typeof isolationStrategy !== 'function') {
         throw new Error(
-          "TailwindCssScopedPreflightPlugin: cssSelector option must be a function - custom one or pre-bundled - import { exceptMatched, matchedOnly } from 'tailwindcss-scoped-preflight-plugin')",
+          "TailwindCssScopedPreflightPlugin: preflightRulesIsolation option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, enableForSelector } from 'tailwindcss-scoped-preflight-plugin')",
         );
       }
 
-      if (corePlugins("preflight")) {
+      if (corePlugins('preflight')) {
         throw new Error(
           `TailwindCssScopedPreflightPlugin: TailwindCSS corePlugins.preflight config option must be set to false`,
         );
       }
 
       baseCssStyles.walkRules((rule) => {
-        if (cssRulePropsFilter) {
+        if (propsFilter) {
           const selectorSet = new Set(rule.selectors);
 
-          rule.nodes = rule.nodes?.filter((node) => {
+          rule.nodes = rule.nodes?.map((node) => {
             if (node instanceof postcss.Declaration) {
-              return (
-                cssRulePropsFilter({
+              if (
+                propsFilter({
                   selectorSet,
                   property: node.prop,
                   value: node.value,
-                }) !== false
-              );
+                }) === false
+              ) {
+                return postcss.comment({
+                  text: node.toString(),
+                });
+              }
             }
-            return true;
+            return node;
           });
         }
         rule.selectors = rule.selectors
-          .map((s) => cssSelector(s))
-          .filter(booleanFilter);
-        rule.selector = rule.selectors.join(",\n");
+          .map((s) => isolationStrategy({ ruleSelector: s }))
+          .filter((value, index, array) => value && array.indexOf(value) === index);
+        rule.selector = rule.selectors.join(',\n');
         if (!rule.nodes.some((n) => n instanceof postcss.Declaration)) {
           rule.nodes = [];
         }
       });
 
       addBase(
-        baseCssStyles.nodes.filter((node) =>
-          node instanceof postcss.Rule
+        baseCssStyles.nodes.filter((node, i, all) => {
+          const next = all[i + 1];
+          return node instanceof postcss.Rule
             ? node.nodes.length > 0 && node.selector
-            : true,
-        ) as unknown as CSSRuleObject[],
+            : node instanceof postcss.Comment
+              ? next instanceof postcss.Rule && next.selector && next.nodes.length > 0
+              : true;
+        }) as unknown as CSSRuleObject[],
       );
     },
   () => ({
@@ -78,4 +82,4 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
   }),
 );
 
-export * from "./selectors.js";
+export * from './strategies.js';
