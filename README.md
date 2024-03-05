@@ -10,15 +10,21 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 
 This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS ruleSelector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
-Starting from version 3 it provides a powerful configuration to precisely control selectors, flexibly remove some rules or even particular CSS properties (if you have some specific conflicts).
 
-There are 3 pre-bundled isolation strategies available (as named imports), but you can define your own as well (example below):
+Starting from version 3 it provides a powerful configuration to (optionally):
 
+- 🤌 precisely control CSS selectors;
+- 💨 flexibly remove some CSS rules, if you need;
+- 🔎 or even remove particular CSS properties (if you have some specific conflicts).
+
+For ease of use, there are 3 pre-bundled isolation strategies available (as named imports) that cover 99% cases:
 - `isolateInsideOfContainer` - use it when you have all the tailwind-powered stuff **isolated under some root container**. This will protect from preflight all the DOM outside of it.
 - `isolateOutsideOfContainer` - use it when you have tailwind everywhere as usual, but you want to **exclude some part of the DOM** from preflight styles.
 - `isolateForComponents` - use it when you want preflight styles to be applied **only to particular elements** immediately (without extra roots or wrappers). Good for components - just apply specified class to your component and use it anywhere.
 
-Although all the strategies allow you to specify a number of selectors - it's recommended to use one short ruleSelector to avoid CSS bloat as selectors repeat many times in the generated CSS.
+> Although all the strategies allow you to specify a number of selectors - it's recommended to use one short ruleSelector to avoid CSS bloat as selectors repeat many times in the generated CSS.
+
+🔨 If none of these strategies work for your case, or something isn't perfect - you can create your own (examples below).
 
 ## 1. Install
 
