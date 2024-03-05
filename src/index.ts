@@ -3,8 +3,10 @@ import { readFileSync } from 'fs';
 import postcss from 'postcss';
 
 interface PluginOptions {
+  /** @deprecated upgrade to v3 and use cssSelector as a callback (with pre-bundled handlers matchedOnly, exceptMatched or your own custom one) */
   cssSelector: string;
-  mode?: 'matched only' | 'except matched';
+  /** @deprecated dropped in v3 in favor of customized cssSelector callbacks */
+  mode?: "matched only" | "except matched";
 }
 
 export const scopedPreflightStyles = withOptions<PluginOptions>(
