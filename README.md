@@ -18,6 +18,7 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 - 🔎 or even remove particular CSS properties (if you have some specific conflicts).
 
 For ease of use, there are 3 pre-bundled isolation strategies available (as named imports) that cover 99% cases:
+
 - `isolateInsideOfContainer` - everything is protected from preflight, except specified Tailwind root(s).
   Use it when you have all the tailwind-powered stuff **isolated under some root container**.
 - `isolateOutsideOfContainer` - protects specific root(s) from preflight - Tailwind is everywhere outside.
@@ -69,7 +70,7 @@ const config = {
           // remove: [":before", ":after"], // this can remove mentioned rules completely
         },
       ),
-      
+
       // or you can make your own rules isolation strategy - it's basically a function accepting original ruleSelector and returning a transformed one
       // isolationStrategy: (ruleSelector) =>
       //   ruleSelector === '*'
@@ -206,3 +207,52 @@ exports.default = config;
 ```
 
 > Once again - keep custom selectors short, and prefer using just one ruleSelector (should be enough) - it will result in smaller CSS
+
+# Migration guide (to v3)
+
+## from v2
+
+#### for 'matched only' mode users
+
+```diff
+- import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
++ import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+// ...
+     scopedPreflightStyles({
+-       mode: 'matched only',
+-       cssSelector: '.twp',
++       isolationStrategy: isolateInsideOfContainer('.twp'),
+      }),
+```
+
+Is some cases you may have to pick the isolateForComponents strategy - try which works best for you. 
+
+
+#### for 'except matched' mode users
+
+```diff
+- import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
++ import { scopedPreflightStyles, isolateOutsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+// ...
+     scopedPreflightStyles({
+-       mode: 'except matched',
+-       cssSelector: '.notwp',
++       isolationStrategy: isolateOutsideOfContainer('.notwp'),
+      }),
+```
+
+## from v1
+
+```diff
+- import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
++ import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+// ...
+     scopedPreflightStyles({
+-       preflightSelector: '.twp',
+-       disableCorePreflight: true,
++       isolationStrategy: isolateInsideOfContainer('.twp'),
+      }),
+```
