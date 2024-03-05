@@ -4,7 +4,7 @@ import postcss from 'postcss';
 
 interface PluginOptions {
   cssSelector: string;
-  mode?: 'matched only' | 'except matched';
+  mode?: 'matched only' | 'under matched' | 'except matched';
 }
 
 export const scopedPreflightStyles = withOptions<PluginOptions>(
@@ -27,6 +27,8 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
         rule.selectors = rule.selectors.map((s) => {
           if (mode === 'except matched') {
             return `${s}:where(:not(${cssSelector} *))`;
+          } else if (mode === 'under matched') {
+            return `${cssSelector} ${s}`;
           } else {
             // matched only
             return `${s}:where(${cssSelector},${cssSelector} *)`;
