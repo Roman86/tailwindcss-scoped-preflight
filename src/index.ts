@@ -27,14 +27,19 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
         rule.selectors = rule.selectors.map((s) => {
           if (mode === 'except matched') {
             return `${s}:where(:not(${cssSelector} *))`;
-          } else if (mode === 'under matched') {
-            return `${cssSelector} ${s}`;
+          } else if (
+            mode === 'under matched' &&
+            ['html', ':host', 'body'].includes(s)
+          ) {
+            return cssSelector;
           } else {
             // matched only
             return `${s}:where(${cssSelector},${cssSelector} *)`;
           }
         });
-        rule.selector = rule.selectors.join(',\n');
+        rule.selector = rule.selectors
+          .filter((value, index, array) => array.indexOf(value) === index)
+          .join(',\n');
       });
 
       addBase(baseCssStyles.nodes as any);
