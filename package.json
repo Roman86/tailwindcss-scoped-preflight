@@ -1,6 +1,6 @@
 {
   "name": "tailwindcss-scoped-preflight",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "To avoid style conflicts (CSS collisions/interference side effects) when using Tailwind CSS with other UI libraries like Antd, Vuetify etc.",
   "type": "module",
   "source": "src/index.ts",
