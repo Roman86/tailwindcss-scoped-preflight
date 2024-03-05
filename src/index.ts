@@ -24,7 +24,7 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
 
       if (typeof isolationStrategy !== 'function') {
         throw new Error(
-          "TailwindCssScopedPreflightPlugin: preflightRulesIsolation option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, enableForSelector } from 'tailwindcss-scoped-preflight-plugin')",
+          "TailwindCssScopedPreflightPlugin: isolationStrategy option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, isolateForComponents } from 'tailwindcss-scoped-preflight-plugin')",
         );
       }
 
