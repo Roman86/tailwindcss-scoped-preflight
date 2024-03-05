@@ -29,6 +29,7 @@
     "scoped",
     "local",
     "selector",
+    "vuetify",
     "antd"
   ],
   "author": "Roman Kozodoi",
@@ -38,11 +39,9 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-react": "^7.34.0",
     "microbundle": "^0.15.1",
     "prettier": "^3.2.5",
-    "prettier-plugin-multiline-arrays": "^3.0.4",
-    "tsconfig-paths": "^4.2.0"
+    "prettier-plugin-multiline-arrays": "^3.0.4"
   },
   "peerDependencies": {
     "postcss": "^8",
