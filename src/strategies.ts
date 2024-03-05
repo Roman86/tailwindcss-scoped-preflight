@@ -50,8 +50,8 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy =
           .map((s) => `${s},${s} *`)
           .join(',')}))`);
 
-export const isolateForComponents =
-  (componentSelectors: string | string[], options: Options): CSSRuleSelectorTransformer =>
+export const isolateForComponents: SelectorBasedStrategy =
+  (componentSelectors, options): CSSRuleSelectorTransformer =>
   ({ ruleSelector }) =>
     defaultHandler(ruleSelector, options) ??
     ([
