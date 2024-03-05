@@ -18,13 +18,17 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 - 🔎 or even remove particular CSS properties (if you have some specific conflicts).
 
 For ease of use, there are 3 pre-bundled isolation strategies available (as named imports) that cover 99% cases:
-- `isolateInsideOfContainer` - use it when you have all the tailwind-powered stuff **isolated under some root container**. This will protect from preflight all the DOM outside of it.
-- `isolateOutsideOfContainer` - use it when you have tailwind everywhere as usual, but you want to **exclude some part of the DOM** from preflight styles.
-- `isolateForComponents` - use it when you want preflight styles to be applied **only to particular elements** immediately (without extra roots or wrappers). Good for components - just apply specified class to your component and use it anywhere.
+- `isolateInsideOfContainer` - everything is protected from preflight, except specified Tailwind root(s).
+  Use it when you have all the tailwind-powered stuff **isolated under some root container**.
+- `isolateOutsideOfContainer` - protects specific root(s) from preflight - Tailwind is everywhere outside.
+  Use it when you have tailwind everywhere as usual, but you want to **exclude some part of the DOM** from preflight styles.
+- `isolateForComponents` - everything is protected from preflight, except components marked with specified selector.
+  Use it when you want preflight styles to be applied **only to particular elements** immediately (without extra roots or wrappers).
+  Good for components - just specify some unique css class for all your components and use them anywhere.
 
 > Although all the strategies allow you to specify a number of selectors - it's recommended to use one short ruleSelector to avoid CSS bloat as selectors repeat many times in the generated CSS.
 
-🔨 If none of these strategies work for your case, or something isn't perfect - you can create your own (examples below).
+🔨 If none of these strategies work for your case, or something isn't perfect - you can create your own strategy (examples below).
 
 ## 1. Install
 
