@@ -71,13 +71,17 @@ const config = {
         },
       ),
 
-      // or you can make your own rules isolation strategy - it's basically a function accepting original ruleSelector and returning a transformed one
-      // isolationStrategy: (ruleSelector) =>
+      // or make your own rules transformation
+      // isolationStrategy: ({ ruleSelector }) =>
       //   ruleSelector === '*'
       //     ? '' // returning empty string removes the rule
-      //     : ['html', ':host'].includes(ruleSelector)
-      //       ? ruleSelector // this way we can keeps the original ruleSelector
-      //       : isolateForComponents(".twp")(ruleSelector), // otherwise, transforms it as per strategy (just for the fallback example)
+      //     : [
+      //       'html',
+      //       ':host',
+      //       'body',
+      //     ].includes(ruleSelector)
+      //       ? `${ruleSelector} .twp` // some custom transformation for html, :host and body
+      //       : isolateForComponents('.twp')(ruleSelector), // otherwise, transform it as per components strategy (just for example)
 
       // it's also possible to filter out some properties
       propsFilter: ({ selectorSet, property, value }) =>
@@ -224,8 +228,7 @@ exports.default = config;
       }),
 ```
 
-Is some cases you may have to pick the isolateForComponents strategy - try which works best for you. 
-
+Is some cases you may have to pick the isolateForComponents strategy - try which works best for you.
 
 #### for 'except matched' mode users
 

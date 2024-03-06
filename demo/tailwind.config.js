@@ -16,12 +16,12 @@ module.exports = {
       ),
 
       // or make your own rules transformation
-      // isolationStrategy: ({ selector }) =>
-      //   selector === "*"
+      // isolationStrategy: ({ ruleSelector }) =>
+      //   ruleSelector === "*"
       //     ? "" // removes the rule (specified selector only)
-      //     : ["html", ":host"].includes(selector)
-      //       ? selector // keeps the original selector
-      //       : enableForSelector(".twp")(selector), // otherwise, transforms selector as per selected behaviour (scoped to .twp)
+      //     : ["html", ":host"].includes(ruleSelector)
+      //       ? ruleSelector // keeps the original selector
+      //       : enableForSelector(".twp")(ruleSelector), // otherwise, transforms selector as per selected behaviour (scoped to .twp)
 
       // it's also possible to filter out some properties
       propsFilter: ({ selectorSet, property, value }) =>
