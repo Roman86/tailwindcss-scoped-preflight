@@ -8,7 +8,7 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 
 ### How
 
-This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS ruleSelector.
+This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
 Starting from version 3 it provides a powerful configuration to (optionally):
@@ -27,7 +27,7 @@ For ease of use, there are 3 pre-bundled isolation strategies available (as name
   Use it when you want preflight styles to be applied **only to particular elements** immediately (without extra roots or wrappers).
   Good for components - just specify some unique css class for all your components and use them anywhere.
 
-> Although all the strategies allow you to specify a number of selectors - it's recommended to use one short ruleSelector to avoid CSS bloat as selectors repeat many times in the generated CSS.
+> Although all the strategies allow you to specify a number of selectors - it's recommended to use one short selector to avoid CSS bloat as selectors repeat many times in the generated CSS.
 
 🔨 If none of these strategies work for your case, or something isn't perfect - you can [create your own strategy](#your-owncustom-isolation-strategy).
 
@@ -59,7 +59,7 @@ const config = {
     // ... other plugins
     scopedPreflightStyles({
       isolationStrategy: isolateForComponents(
-        // ruleSelector string or array of selectors - the less/shorter - the better
+        // selector string or array of selectors - the less/shorter - the better
         [
           '.twp',
           '.comp',
@@ -100,7 +100,7 @@ const config = {
 exports.default = config;
 ```
 
-## 3. Use your ruleSelector according to the strategy
+## 3. Use your selector according to the strategy
 
 ```tsx
 // # MyTailwindButton.tsx
@@ -179,7 +179,7 @@ const config = {
   plugins: [
     // ... other plugins
     scopedPreflightStyles({
-      // it's basically a function accepting original ruleSelector and returning a transformed one
+      // it's basically a function accepting original selector and returning a transformed one
       isolationStrategy: ({ ruleSelector }) =>
         ruleSelector === '*'
           ? '' // returning empty string removes the rule
@@ -208,7 +208,7 @@ const config = {
 exports.default = config;
 ```
 
-> Once again - keep custom selectors short, and prefer using just one ruleSelector (should be enough) - it will result in smaller CSS
+> Once again - keep custom selectors short, and prefer using just one selector (should be enough) - it will result in smaller CSS
 
 # Migration guide (to v3)
 
