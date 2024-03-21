@@ -11,6 +11,10 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
+## V3 is here 🎉
+
+[Migrate from v2](#from-v2) | [Migrate from v1](#from-v1)
+
 Starting from version 3 it provides a powerful configuration to (optionally):
 
 - 🤌 precisely control CSS selectors;
@@ -217,8 +221,10 @@ exports.default = config;
 #### for 'matched only' mode users
 
 ```diff
-- import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
-+ import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
+import {
+  scopedPreflightStyles,
++ isolateInsideOfContainer,
+} from 'tailwindcss-scoped-preflight';
 
 // ...
      scopedPreflightStyles({
@@ -233,8 +239,10 @@ Is some cases you may have to pick the isolateForComponents strategy - try which
 #### for 'except matched' mode users
 
 ```diff
-- import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
-+ import { scopedPreflightStyles, isolateOutsideOfContainer } from 'tailwindcss-scoped-preflight';
+import {
+  scopedPreflightStyles,
++ isolateOutsideOfContainer,
+} from 'tailwindcss-scoped-preflight';
 
 // ...
      scopedPreflightStyles({
@@ -247,8 +255,10 @@ Is some cases you may have to pick the isolateForComponents strategy - try which
 ## from v1
 
 ```diff
-- import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
-+ import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
+import {
+  scopedPreflightStyles,
++ isolateInsideOfContainer,
+} from 'tailwindcss-scoped-preflight';
 
 // ...
      scopedPreflightStyles({
