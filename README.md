@@ -89,7 +89,9 @@ const config = {
       //       ? `${ruleSelector} .twp` // some custom transformation for html, :host and body
       //       : isolateForComponents('.twp')(ruleSelector), // otherwise, transform it as per components strategy (just for example)
 
-      // it's also possible to filter out some properties
+      // it's also possible to filter out some properties:
+      // return false to remove the property,
+      // any other value (including true and undefined) will leave the prop intact
       propsFilter: ({ selectorSet, property, value }) =>
         ![
           // removes the margin reset from a body rule

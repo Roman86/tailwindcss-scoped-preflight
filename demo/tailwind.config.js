@@ -23,7 +23,7 @@ module.exports = {
       //       ? ruleSelector // keeps the original selector
       //       : enableForSelector(".twp")(ruleSelector), // otherwise, transforms selector as per selected behaviour (scoped to .twp)
 
-      // it's also possible to filter out some properties
+      // it's also possible to filter out some properties - return false to remove the property. Any other value (including true and undefined) will leave the prop intact
       propsFilter: ({ selectorSet, property, value }) =>
         ![
           // removes the margin reset from a body rule
