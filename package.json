@@ -12,6 +12,9 @@
     "require": "./dist/plugin.cjs",
     "default": "./dist/plugin.modern.mjs"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "microbundle --target node -f modern,esm,cjs",
     "prepublishOnly": "npm run build",
