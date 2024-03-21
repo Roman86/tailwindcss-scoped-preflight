@@ -15,6 +15,8 @@ So you can control where exactly in DOM to apply these base styles - usually it'
 
 [Migrate from v2](#from-v2) | [Migrate from v1](#from-v1)
 
+Looking for old version's documentation? [v2](https://www.npmjs.com/package/tailwindcss-scoped-preflight/v/legacy-2) | [v1](https://www.npmjs.com/package/tailwindcss-scoped-preflight/v/legacy-1)
+
 Starting from version 3 it provides a powerful configuration to (optionally):
 
 - 🤌 precisely control CSS selectors;

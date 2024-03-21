@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "microbundle --target node -f modern,esm,cjs",
+    "prepublishOnly": "npm run build",
     "dev": "microbundle --target node -f modern,esm,cjs -w",
     "demo": "tailwindcss -i ./demo/stylesin.css -o ./demo/stylesout.css -w"
   },
