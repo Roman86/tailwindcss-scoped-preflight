@@ -1,6 +1,6 @@
 ### What
 
-Tailwind CSS plugin
+[Tailwind CSS](https://tailwindcss.com/) plugin
 
 ### Why
 
@@ -11,7 +11,7 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
-## V3 is here 🎉
+## Version 3 is here 🎉
 
 [Migrate from v2](#from-v2) | [Migrate from v1](#from-v1)
 
@@ -25,12 +25,12 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 
 For ease of use, there are 3 pre-bundled isolation strategies available (as named imports) that cover 99% cases:
 
-- `isolateInsideOfContainer` - everything is protected from preflight, except specified Tailwind root(s).
+- `isolateInsideOfContainer` - everything is protected from the preflight styles, except specified Tailwind root(s).
   Use it when you have all the tailwind-powered stuff **isolated under some root container**.
-- `isolateOutsideOfContainer` - protects specific root(s) from preflight - Tailwind is everywhere outside.
-  Use it when you have tailwind everywhere as usual, but you want to **exclude some part of the DOM** from preflight styles.
-- `isolateForComponents` - everything is protected from preflight, except components marked with specified selector.
-  Use it when you want preflight styles to be applied **only to particular elements** immediately (without extra roots or wrappers).
+- `isolateOutsideOfContainer` - protects specific root(s) from the preflight styles - Tailwind is everywhere outside.
+  Use it when you have Tailwind powered stuff everywhere as usual, but you want to **exclude some part of the DOM** from being affected by the preflight styles.
+- `isolateForComponents` - everything is protected from the preflight styles, except components marked with the selector of your choice.
+  Use it when you want the preflight styles to be applied only to particular elements **immediately** (without extra roots or wrappers).
   Good for components - just specify some unique css class for all your components and use them anywhere.
 
 > Although all the strategies allow you to specify a number of selectors - it's recommended to use one short selector to avoid CSS bloat as selectors repeat many times in the generated CSS.
