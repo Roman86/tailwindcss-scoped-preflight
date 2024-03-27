@@ -13,7 +13,9 @@ export type CSSRuleSelectorTransformer = (info: { ruleSelector: string }) => str
 
 interface PluginOptions {
   isolationStrategy: CSSRuleSelectorTransformer;
+  /** @deprecated prefer using modifyPreflightStyles */
   propsFilter?: (input: PropsFilterInput) => boolean | undefined;
+  modifyPreflightStyles?: (input: PropsFilterInput) => string | null | undefined;
 }
 
 /**
@@ -22,11 +24,13 @@ interface PluginOptions {
  *  import {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container isolateInsideOfContainer},
  *  {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container isolateOutsideOfContainer},
  *  {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#update-your-tailwind-css-configuration isolateForComponents} or write {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#your-owncustom-isolation-strategy your own}
+ * @deprecated prefer using modifyPreflightStyles
  * @param propsFilter - function to filter the preflight CSS properties and values, return false to remove the property. Any other value (including true and undefined) will leave the prop intact
+ * @param modifyPreflightStyles - function to modify the preflight CSS properties and their values, return null to remove the property. Any other returned value will be used as a new value for the property. If you don't want to change it - return the old value (provided in argument object as `value`).
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
 export const scopedPreflightStyles = withOptions<PluginOptions>(
-  ({ isolationStrategy, propsFilter }) =>
+  ({ isolationStrategy, propsFilter, modifyPreflightStyles }) =>
     ({ addBase, corePlugins }) => {
       const baseCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
       const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
@@ -44,21 +48,31 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
       }
 
       baseCssStyles.walkRules((rule) => {
-        if (propsFilter) {
+        if (propsFilter || modifyPreflightStyles) {
           const selectorSet = new Set(rule.selectors);
-
           rule.nodes = rule.nodes?.map((node) => {
             if (node instanceof postcss.Declaration) {
-              if (
-                propsFilter({
-                  selectorSet,
-                  property: node.prop,
-                  value: node.value,
-                }) === false
-              ) {
+              const newValue = modifyPreflightStyles
+                ? modifyPreflightStyles({
+                    selectorSet,
+                    property: node.prop,
+                    value: node.value,
+                  })
+                : node.value;
+
+              const filterValue = propsFilter
+                ? propsFilter({
+                    selectorSet,
+                    property: node.prop,
+                    value: node.value,
+                  })
+                : true;
+              if (filterValue === false || newValue === null) {
                 return postcss.comment({
                   text: node.toString(),
                 });
+              } else if (typeof newValue !== 'undefined' && newValue !== node.value) {
+                node.value = newValue;
               }
             }
             return node;
