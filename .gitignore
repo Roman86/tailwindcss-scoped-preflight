@@ -8,7 +8,6 @@
 
 # testing
 /coverage
-stylesout.css
 
 # production
 /build
