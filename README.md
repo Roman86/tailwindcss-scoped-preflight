@@ -1,4 +1,4 @@
-# Tailwind CSS + UI libs = no CSS conflicts 🚀
+# Tailwind CSS + UI libraries = no conflicts 🚀
 
 ### What
 
