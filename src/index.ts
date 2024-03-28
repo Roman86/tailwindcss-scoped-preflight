@@ -11,11 +11,15 @@ interface PropsFilterInput {
 
 export type CSSRuleSelectorTransformer = (info: { ruleSelector: string }) => string;
 
+type ModifyResult = string | null | undefined;
+
+type ModifyStylesHook = (input: PropsFilterInput) => ModifyResult;
+
 interface PluginOptions {
   isolationStrategy: CSSRuleSelectorTransformer;
   /** @deprecated prefer using modifyPreflightStyles */
   propsFilter?: (input: PropsFilterInput) => boolean | undefined;
-  modifyPreflightStyles?: (input: PropsFilterInput) => string | null | undefined;
+  modifyPreflightStyles?: Record<string, Record<string, ModifyResult>> | ModifyStylesHook;
 }
 
 /**
@@ -47,13 +51,24 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
         );
       }
 
+      let modifyStylesHook: ModifyStylesHook | undefined;
+      if (typeof modifyPreflightStyles === 'function') {
+        modifyStylesHook = modifyPreflightStyles;
+      } else if (modifyPreflightStyles) {
+        const configEntries = Object.entries(modifyPreflightStyles);
+        modifyStylesHook = ({ selectorSet, property, value }) => {
+          const matchingEntry = configEntries.find(([sel]) => selectorSet.has(sel));
+          return matchingEntry?.[1]?.[property];
+        };
+      }
+
       baseCssStyles.walkRules((rule) => {
         if (propsFilter || modifyPreflightStyles) {
           const selectorSet = new Set(rule.selectors);
           rule.nodes = rule.nodes?.map((node) => {
             if (node instanceof postcss.Declaration) {
-              const newValue = modifyPreflightStyles
-                ? modifyPreflightStyles({
+              const newValue = modifyStylesHook
+                ? modifyStylesHook({
                     selectorSet,
                     property: node.prop,
                     value: node.value,
