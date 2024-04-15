@@ -1,4 +1,4 @@
-# <center>Tailwind CSS + UI libraries = no conflicts 🚀</center>
+# Tailwind CSS + UI libraries = no conflicts 🚀
 
 ### What
 
@@ -13,6 +13,8 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
+> ❤️ If you'd like to say thanks, visit my tiny [support website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
+
 ## Version 3 is here 🎉
 
 [Migrate from v2](#from-v2) | [Migrate from v1](#from-v1)
@@ -25,6 +27,7 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 - 💨 flexibly remove any preflight styles;
 - 🔎 or even [modify particular values](#modifying-the-preflight-styles) of the Tailwind preflight styles (if you have some very specific conflicts).
 
+## Strategies overview
 For ease of use, there are 3 pre-bundled isolation strategies available (as named exports) that cover 99% cases:
 
 |                                   Pre-bundled strategy                                   | Description                                                                                                                                                                                                                                                                                                                                                          |
@@ -323,3 +326,6 @@ import {
 +       isolationStrategy: isolateInsideOfContainer('.twp'),
       }),
 ```
+
+# ❤️ Support
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="217" height="60">](https://www.buymeacoffee.com/romanjs)
