@@ -13,7 +13,9 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
-> ❤️ If you'd like to say thanks, visit my tiny [support website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
+### ❤️ If you'd like to say thanks
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="108" height="30">](https://www.buymeacoffee.com/romanjs)
+<br/>Support/contact [tiny website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
 
 ## Version 3 is here 🎉
 
@@ -326,6 +328,3 @@ import {
 +       isolationStrategy: isolateInsideOfContainer('.twp'),
       }),
 ```
-
-# ❤️ Support
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="217" height="60">](https://www.buymeacoffee.com/romanjs)
