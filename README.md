@@ -192,8 +192,9 @@ const config = {
   plugins: [
     // ...
     scopedPreflightStyles({
-      isolationStrategy: ({ ruleSelector, ...rest }) => {
-        // some selector transformation for html, :host and body rules
+      //it's just a function accepting { ruleSelector: string } and returning modified rule selector (prefixed or whatever you need)
+      isolationStrategy: ({ ruleSelector, ...whateverElse }) => {
+        // let's say we want to scope the styles for some global selectors Tailwind utilizes:
         if (
           [
             'html',
@@ -201,17 +202,25 @@ const config = {
             'body',
           ].includes(ruleSelector)
         ) {
-          return `${ruleSelector} .twp`;
+          return `${ruleSelector} .twp`; // adding the .twp class to these global things so only things under .twp would be affected
+        }
+        
+        // let's say we want table to be preflighted only when under the .twp
+        if (ruleSelector === 'table') {
+          return `.twp ${ruleSelector}`;
         }
 
-        // returning an empty string or anything falsy removes the CSS rule
-        if (ruleSelector === '*') {
+        // and don't want * to be preflighted at all
+        if (ruleSelector === '*') {  
+          // returning an empty string or anything falsy/nullish removes the CSS rule
           return '';
         }
 
-        // and by default - transform it as per components strategy (just for example)
-        return isolateForComponents('.twp')({ ruleSelector, ...rest });
-        // Caution! Don't forget to return the value - falsy result will remove the rule
+        // Caution! Don't forget to return the value,
+        // falsy/nullish result will remove the rule.
+        // Either return the original ruleSelector, or inject some of existing strategies,
+        // let's fallback to the isolateForComponents strategy for this demo:
+        return isolateForComponents('.twp')({ ruleSelector, ...whateverElse });
       },
     }),
   ],
