@@ -2,7 +2,7 @@ import { withOptions } from 'tailwindcss/plugin.js';
 import postcss from 'postcss';
 import { readFileSync } from 'fs';
 
-const defaultHandler = (selector, {
+const optionsHandlerForIgnoreAndRemove = (selector, {
   ignore,
   remove
 } = {}) => {
@@ -14,6 +14,7 @@ const defaultHandler = (selector, {
   }
   return null;
 };
+const roots = new Set(['html', 'body', ':host']);
 /**
  * Isolates the TailwindCSS preflight styles inside of the container (assuming all the TailwindCSS is inside of this container)
  *
@@ -24,11 +25,14 @@ const defaultHandler = (selector, {
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container (example)
  */
-const isolateInsideOfContainer = (containerSelectors, options) => ({
-  ruleSelector
-}) => {
-  var _defaultHandler;
-  return (_defaultHandler = defaultHandler(ruleSelector, options)) != null ? _defaultHandler : ['html', 'body', ':host'].includes(ruleSelector) ? [containerSelectors].flat().join(',') : [containerSelectors].flat().map(s => `${ruleSelector}:where(${s},${s} *)`).join(',');
+const isolateInsideOfContainer = (containerSelectors, options) => {
+  const whereNotExcept = typeof (options == null ? void 0 : options.except) === 'string' && options.except ? `:where(:not(${options.except},${options.except} *))` : '';
+  return ({
+    ruleSelector
+  }) => {
+    var _optionsHandlerForIgn;
+    return (_optionsHandlerForIgn = optionsHandlerForIgnoreAndRemove(ruleSelector, options)) != null ? _optionsHandlerForIgn : roots.has(ruleSelector) ? [containerSelectors].flat().map(cont => `${cont}${whereNotExcept}`).join(',') : [containerSelectors].flat().map(s => `${ruleSelector}:where(${s},${s} *)${whereNotExcept}`).join(',');
+  };
 };
 /**
  * Isolates the TailwindCSS preflight styles outside of the container (assuming no TailwindCSS inside of it)
@@ -39,11 +43,23 @@ const isolateInsideOfContainer = (containerSelectors, options) => ({
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container (example)
  */
-const isolateOutsideOfContainer = (containerSelectors, options) => ({
-  ruleSelector
-}) => {
-  var _defaultHandler2;
-  return (_defaultHandler2 = defaultHandler(ruleSelector, options)) != null ? _defaultHandler2 : ['html', 'body', ':host'].includes(ruleSelector) ? ruleSelector : `${ruleSelector}:where(:not(${[containerSelectors].flat().map(s => `${s},${s} *`).join(',')}))`;
+const isolateOutsideOfContainer = (containerSelectors, options) => {
+  const whereNotContainerSelector = `:where(:not(${[containerSelectors].flat().map(s => `${s},${s} *`).join(',')}))`;
+  const insideOfContainerLogic = typeof (options == null ? void 0 : options.plus) === 'string' && options.plus ? isolateInsideOfContainer(options.plus) : null;
+  return ({
+    ruleSelector
+  }) => {
+    const ignoreOrRemove = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
+    if (ignoreOrRemove != null) {
+      return ignoreOrRemove;
+    }
+    if (roots.has(ruleSelector)) {
+      return ruleSelector;
+    }
+    return [`${ruleSelector}${whereNotContainerSelector}`, insideOfContainerLogic == null ? void 0 : insideOfContainerLogic({
+      ruleSelector
+    })].filter(Boolean).join(',');
+  };
 };
 /**
  * Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
@@ -54,11 +70,16 @@ const isolateOutsideOfContainer = (containerSelectors, options) => ({
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#update-your-tailwind-css-configuration (example)
  */
-const isolateForComponents = (componentSelectors, options) => ({
-  ruleSelector
-}) => {
-  var _defaultHandler3;
-  return (_defaultHandler3 = defaultHandler(ruleSelector, options)) != null ? _defaultHandler3 : ['html', 'body', ':host'].includes(ruleSelector) ? `${ruleSelector} :where(${[componentSelectors].flat().join(',')})` : `${ruleSelector}:where(${[componentSelectors].flat().map(s => `${s},${s} *`).join(',')})`;
+const isolateForComponents = (componentSelectors, options) => {
+  const componentSelectorsArray = [componentSelectors].flat();
+  const whereComponentSelectorsDirect = `:where(${componentSelectorsArray.join(',')})`;
+  const whereComponentSelectorsWithSubs = `:where(${componentSelectorsArray.map(s => `${s},${s} *`).join(',')})`;
+  return ({
+    ruleSelector
+  }) => {
+    var _optionsHandlerForIgn2;
+    return (_optionsHandlerForIgn2 = optionsHandlerForIgnoreAndRemove(ruleSelector, options)) != null ? _optionsHandlerForIgn2 : roots.has(ruleSelector) ? `${ruleSelector} ${whereComponentSelectorsDirect}` : `${ruleSelector}${whereComponentSelectorsWithSubs}`;
+  };
 };
 
 /**

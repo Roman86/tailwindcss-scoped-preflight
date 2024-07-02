@@ -1,9 +1,9 @@
-import { type CSSRuleSelectorTransformer } from './index.js';
+import { type CSSRuleSelectorTransformer } from './index';
 interface Options {
     ignore?: string[];
     remove?: string[];
 }
-type SelectorBasedStrategy = (selectors: string | string[], options?: Options) => CSSRuleSelectorTransformer;
+type SelectorBasedStrategy<ExtraOptions = unknown> = (selectors: string | string[], options?: Options & ExtraOptions) => CSSRuleSelectorTransformer;
 /**
  * Isolates the TailwindCSS preflight styles inside of the container (assuming all the TailwindCSS is inside of this container)
  *
@@ -14,7 +14,9 @@ type SelectorBasedStrategy = (selectors: string | string[], options?: Options) =
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container (example)
  */
-export declare const isolateInsideOfContainer: SelectorBasedStrategy;
+export declare const isolateInsideOfContainer: SelectorBasedStrategy<{
+    except?: string;
+}>;
 /**
  * Isolates the TailwindCSS preflight styles outside of the container (assuming no TailwindCSS inside of it)
  * @param containerSelectors
@@ -24,7 +26,9 @@ export declare const isolateInsideOfContainer: SelectorBasedStrategy;
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container (example)
  */
-export declare const isolateOutsideOfContainer: SelectorBasedStrategy;
+export declare const isolateOutsideOfContainer: SelectorBasedStrategy<{
+    plus?: string;
+}>;
 /**
  * Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
  * @param componentSelectors

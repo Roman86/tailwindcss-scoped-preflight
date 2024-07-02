@@ -31,4 +31,4 @@ export declare const scopedPreflightStyles: {
     };
     __isOptionsFunction: true;
 };
-export * from './strategies.js';
+export * from './strategies';

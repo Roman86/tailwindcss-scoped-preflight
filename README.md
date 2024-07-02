@@ -14,6 +14,7 @@ This plugin is limiting the scope of [Tailwind's opinionated preflight styles](h
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
 ### ❤️ If you'd like to say thanks
+
 [<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="108" height="30">](https://www.buymeacoffee.com/romanjs)
 <br/>Support/contact [tiny website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
 
@@ -30,10 +31,11 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 - 🔎 or even [modify particular values](#modifying-the-preflight-styles) of the Tailwind preflight styles (if you have some very specific conflicts).
 
 ## Strategies overview
+
 For ease of use, there are 3 pre-bundled isolation strategies available (as named exports) that cover 99% cases:
 
 |                                   Pre-bundled strategy                                   | Description                                                                                                                                                                                                                                                                                                                                                          |
-|:----------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :--------------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |   `isolateInsideOfContainer`<br/><img src="docs/inside.png" alt="inside" width="220"/>   | Everything is protected from the preflight styles, except specified Tailwind root(s).<br/>Use it when you have all the tailwind-powered stuff **isolated under some root container**.                                                                                                                                                                                |
 | `isolateOutsideOfContainer`<br/><img src="docs/outside.png" alt="outside" width="220"/>  | Protects specific root(s) from the preflight styles - Tailwind is everywhere outside.<br/>Use it when you have Tailwind powered stuff everywhere as usual, but you want to **exclude some part of the DOM** from being affected by the preflight styles.                                                                                                             |
 | `isolateForComponents`<br/><img src="docs/components.png" alt="components" width="220"/> | Everything is protected from the preflight styles, except components marked with the selector of your choice.<br/>Use it when you want the preflight styles to be applied only to particular elements **immediately** (without extra roots or wrappers).<br/>Good for components - just specify some unique css class for all your components and use them anywhere. |
@@ -45,20 +47,18 @@ For ease of use, there are 3 pre-bundled isolation strategies available (as name
 ### 1. Install
 
 ```bash
-npm i tailwindcss-scoped-preflight
+npm i -D tailwindcss-scoped-preflight
 ```
 
 ### 2. Update your Tailwind CSS configuration
 
-#### 
+#### 2.1 Case: you want to lock Tailwind preflight styles inside of some root container (or multiple containers), so they couldn't affect the rest of your page.
+Use `isolateInsideOfContainer`:
 
 ```javascript
 // tailwind.config.js
 
-import {
-  scopedPreflightStyles,
-  isolateInsideOfContainer, // there are also isolateOutsideOfContainer and isolateForComponents
-} from 'tailwindcss-scoped-preflight';
+import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
 
 /** @type {import("tailwindcss").Config} */
 const config = {
@@ -66,7 +66,9 @@ const config = {
   plugins: [
     // ...
     scopedPreflightStyles({
-      isolationStrategy: isolateInsideOfContainer('.twp'),
+      isolationStrategy: isolateInsideOfContainer('.twp', {
+        except: '.no-twp', // optional, to exclude some elements under .twp from being preflighted, like external markup
+      }),
     }),
   ],
 };
@@ -74,15 +76,35 @@ const config = {
 exports.default = config;
 ```
 
-### 3. Use your selector
+#### 2.2 Case: you want Tailwind preflight styles to be everywhere except some root container(s) that may collide.
+Use `isolateOutsideOfContainer`:
+
+```javascript
+// tailwind.config.js
+
+import { scopedPreflightStyles, isolateOutsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+/** @type {import("tailwindcss").Config} */
+const config = {
+  // ...
+  plugins: [
+    // ...
+    scopedPreflightStyles({
+      isolationStrategy: isolateOutsideOfContainer('.no-twp', {
+        plus: '.twp', // optional, if you have your Tailwind components under .no-twp, you need them to be preflighted
+      }),
+    }),
+  ],
+};
+
+exports.default = config;
+```
+
+### 3. Use specified selectors in your DOM
 
 ```tsx
-export function MyApp({children}: PropsWithChildren) {
-  return (
-    <div className={'twp'}>
-      {children}
-    </div>
-  );
+export function MyApp({ children }: PropsWithChildren) {
+  return <div className={'twp'}>{children}</div>;
 }
 ```
 
@@ -94,10 +116,7 @@ In this case `isolateForComponents` strategy might be what you need.
 ```javascript
 // tailwind.config.js
 
-import {
-  scopedPreflightStyles,
-  isolateForComponents, 
-} from 'tailwindcss-scoped-preflight';
+import { scopedPreflightStyles, isolateForComponents } from 'tailwindcss-scoped-preflight';
 
 /** @type {import("tailwindcss").Config} */
 const config = {
@@ -149,14 +168,13 @@ scopedPreflightStyles({
 
 > Although all the strategies allow you to specify a number of selectors - it's recommended to use one short selector to avoid CSS bloat as selectors repeat many times in the generated CSS.
 
-
 ### Keeping some preflight styles unaffected
 
 ```diff
 scopedPreflightStyles({
   isolationStrategy: isolateForComponents(
     '.comp',
-    // every strategy provides the same options to fine tune the transformation
+    // every strategy provides some base options to fine tune the transformation
 +   {
 +     ignore: ["html", ":host", "*"],
 +   },
@@ -204,14 +222,14 @@ const config = {
         ) {
           return `${ruleSelector} .twp`; // adding the .twp class to these global things so only things under .twp would be affected
         }
-        
+
         // let's say we want table to be preflighted only when under the .twp
         if (ruleSelector === 'table') {
           return `.twp ${ruleSelector}`;
         }
 
         // and don't want * to be preflighted at all
-        if (ruleSelector === '*') {  
+        if (ruleSelector === '*') {
           // returning an empty string or anything falsy/nullish removes the CSS rule
           return '';
         }
@@ -255,7 +273,7 @@ scopedPreflightStyles({
       color: 'red',
     },
   },
-})
+});
 ```
 
 #### Function syntax
@@ -263,7 +281,7 @@ scopedPreflightStyles({
 ```javascript
 scopedPreflightStyles({
   isolationStrategy: isolateForComponents('.comp'), // whatever
-  modifyPreflightStyles: ({selectorSet, property, value}) => {
+  modifyPreflightStyles: ({ selectorSet, property, value }) => {
     // let's say you want to override the font family (no matter what the rule selector is)
     if (property === 'font-family' && value !== 'inherit') {
       return '"Open Sans", sans-serif';
@@ -281,7 +299,7 @@ scopedPreflightStyles({
     // so you may just omit such default return
     return value;
   },
-})
+});
 ```
 
 # Migration guide (to v3)

@@ -9,12 +9,10 @@
 # testing
 /coverage
 
-# production
-/build
-
 # misc
 .DS_Store
 *.pem
+.idea
 
 # debug
 npm-debug.log*
@@ -31,3 +29,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 .env*.local
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

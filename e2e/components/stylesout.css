@@ -3,8 +3,9 @@
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
 
-::before:where(.twp,.twp *),
-::after:where(.twp,.twp *) {
+*:where(.comp,.comp *),
+::before:where(.comp,.comp *),
+::after:where(.comp,.comp *) {
   box-sizing: border-box;
   /* 1 */
   border-width: 0;
@@ -13,6 +14,10 @@
   /* 2 */
   border-color: #e5e7eb;
   /* 2 */
+}
+
+::before:where(.comp,.comp *),
+::after:where(.comp,.comp *) {
   --tw-content: '';
 }
 
@@ -26,9 +31,9 @@
 7. Disable tap highlights on iOS
 */
 
-html .twp,
-:host .twp {
-  /* line-height: 1.5 */
+html :where(.comp),
+:host :where(.comp) {
+  line-height: 1.5;
   /* 1 */
   -webkit-text-size-adjust: 100%;
   /* 2 */
@@ -52,8 +57,8 @@ html .twp,
 2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
 */
 
-body .twp {
-  margin: 0 4px;
+body :where(.comp) {
+  margin: 0;
   /* 1 */
   line-height: inherit;
   /* 2 */
@@ -65,7 +70,7 @@ body .twp {
 3. Ensure horizontal rules are visible by default.
 */
 
-hr:where(.twp,.twp *) {
+hr:where(.comp,.comp *) {
   height: 0;
   /* 1 */
   color: inherit;
@@ -78,7 +83,7 @@ hr:where(.twp,.twp *) {
 Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
-abbr:where([title]):where(.twp,.twp *) {
+abbr:where([title]):where(.comp,.comp *) {
   -webkit-text-decoration: underline dotted;
           text-decoration: underline dotted;
 }
@@ -87,12 +92,12 @@ abbr:where([title]):where(.twp,.twp *) {
 Remove the default font size and weight for headings.
 */
 
-h1:where(.twp,.twp *),
-h2:where(.twp,.twp *),
-h3:where(.twp,.twp *),
-h4:where(.twp,.twp *),
-h5:where(.twp,.twp *),
-h6:where(.twp,.twp *) {
+h1:where(.comp,.comp *),
+h2:where(.comp,.comp *),
+h3:where(.comp,.comp *),
+h4:where(.comp,.comp *),
+h5:where(.comp,.comp *),
+h6:where(.comp,.comp *) {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -101,7 +106,7 @@ h6:where(.twp,.twp *) {
 Reset links to optimize for opt-in styling instead of opt-out.
 */
 
-a:where(.twp,.twp *) {
+a:where(.comp,.comp *) {
   color: inherit;
   text-decoration: inherit;
 }
@@ -110,8 +115,8 @@ a:where(.twp,.twp *) {
 Add the correct font weight in Edge and Safari.
 */
 
-b:where(.twp,.twp *),
-strong:where(.twp,.twp *) {
+b:where(.comp,.comp *),
+strong:where(.comp,.comp *) {
   font-weight: bolder;
 }
 
@@ -122,10 +127,10 @@ strong:where(.twp,.twp *) {
 4. Correct the odd `em` font sizing in all browsers.
 */
 
-code:where(.twp,.twp *),
-kbd:where(.twp,.twp *),
-samp:where(.twp,.twp *),
-pre:where(.twp,.twp *) {
+code:where(.comp,.comp *),
+kbd:where(.comp,.comp *),
+samp:where(.comp,.comp *),
+pre:where(.comp,.comp *) {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   /* 1 */
   font-feature-settings: normal;
@@ -140,7 +145,7 @@ pre:where(.twp,.twp *) {
 Add the correct font size in all browsers.
 */
 
-small:where(.twp,.twp *) {
+small:where(.comp,.comp *) {
   font-size: 80%;
 }
 
@@ -148,19 +153,19 @@ small:where(.twp,.twp *) {
 Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
 
-sub:where(.twp,.twp *),
-sup:where(.twp,.twp *) {
+sub:where(.comp,.comp *),
+sup:where(.comp,.comp *) {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-sub:where(.twp,.twp *) {
+sub:where(.comp,.comp *) {
   bottom: -0.25em;
 }
 
-sup:where(.twp,.twp *) {
+sup:where(.comp,.comp *) {
   top: -0.5em;
 }
 
@@ -170,7 +175,7 @@ sup:where(.twp,.twp *) {
 3. Remove gaps between table borders by default.
 */
 
-table:where(.twp,.twp *) {
+table:where(.comp,.comp *) {
   text-indent: 0;
   /* 1 */
   border-color: inherit;
@@ -185,11 +190,11 @@ table:where(.twp,.twp *) {
 3. Remove default padding in all browsers.
 */
 
-button:where(.twp,.twp *),
-input:where(.twp,.twp *),
-optgroup:where(.twp,.twp *),
-select:where(.twp,.twp *),
-textarea:where(.twp,.twp *) {
+button:where(.comp,.comp *),
+input:where(.comp,.comp *),
+optgroup:where(.comp,.comp *),
+select:where(.comp,.comp *),
+textarea:where(.comp,.comp *) {
   font-family: inherit;
   /* 1 */
   font-feature-settings: inherit;
@@ -214,8 +219,8 @@ textarea:where(.twp,.twp *) {
 Remove the inheritance of text transform in Edge and Firefox.
 */
 
-button:where(.twp,.twp *),
-select:where(.twp,.twp *) {
+button:where(.comp,.comp *),
+select:where(.comp,.comp *) {
   text-transform: none;
 }
 
@@ -224,10 +229,10 @@ select:where(.twp,.twp *) {
 2. Remove default button styles.
 */
 
-button:where(.twp,.twp *),
-[type='button']:where(.twp,.twp *),
-[type='reset']:where(.twp,.twp *),
-[type='submit']:where(.twp,.twp *) {
+button:where(.comp,.comp *),
+[type='button']:where(.comp,.comp *),
+[type='reset']:where(.comp,.comp *),
+[type='submit']:where(.comp,.comp *) {
   -webkit-appearance: button;
   /* 1 */
   background-color: transparent;
@@ -240,7 +245,7 @@ button:where(.twp,.twp *),
 Use the modern Firefox focus style for all focusable elements.
 */
 
-:-moz-focusring:where(.twp,.twp *) {
+:-moz-focusring:where(.comp,.comp *) {
   outline: auto;
 }
 
@@ -248,7 +253,7 @@ Use the modern Firefox focus style for all focusable elements.
 Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
 */
 
-:-moz-ui-invalid:where(.twp,.twp *) {
+:-moz-ui-invalid:where(.comp,.comp *) {
   box-shadow: none;
 }
 
@@ -256,7 +261,7 @@ Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/
 Add the correct vertical alignment in Chrome and Firefox.
 */
 
-progress:where(.twp,.twp *) {
+progress:where(.comp,.comp *) {
   vertical-align: baseline;
 }
 
@@ -264,8 +269,8 @@ progress:where(.twp,.twp *) {
 Correct the cursor style of increment and decrement buttons in Safari.
 */
 
-::-webkit-inner-spin-button:where(.twp,.twp *),
-::-webkit-outer-spin-button:where(.twp,.twp *) {
+::-webkit-inner-spin-button:where(.comp,.comp *),
+::-webkit-outer-spin-button:where(.comp,.comp *) {
   height: auto;
 }
 
@@ -274,7 +279,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 2. Correct the outline style in Safari.
 */
 
-[type='search']:where(.twp,.twp *) {
+[type='search']:where(.comp,.comp *) {
   -webkit-appearance: textfield;
   /* 1 */
   outline-offset: -2px;
@@ -285,7 +290,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 Remove the inner padding in Chrome and Safari on macOS.
 */
 
-::-webkit-search-decoration:where(.twp,.twp *) {
+::-webkit-search-decoration:where(.comp,.comp *) {
   -webkit-appearance: none;
 }
 
@@ -294,7 +299,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 2. Change font properties to `inherit` in Safari.
 */
 
-::-webkit-file-upload-button:where(.twp,.twp *) {
+::-webkit-file-upload-button:where(.comp,.comp *) {
   -webkit-appearance: button;
   /* 1 */
   font: inherit;
@@ -305,7 +310,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 Add the correct display in Chrome and Safari.
 */
 
-summary:where(.twp,.twp *) {
+summary:where(.comp,.comp *) {
   display: list-item;
 }
 
@@ -313,34 +318,34 @@ summary:where(.twp,.twp *) {
 Removes the default spacing and border for appropriate elements.
 */
 
-blockquote:where(.twp,.twp *),
-dl:where(.twp,.twp *),
-dd:where(.twp,.twp *),
-h1:where(.twp,.twp *),
-h2:where(.twp,.twp *),
-h3:where(.twp,.twp *),
-h4:where(.twp,.twp *),
-h5:where(.twp,.twp *),
-h6:where(.twp,.twp *),
-hr:where(.twp,.twp *),
-figure:where(.twp,.twp *),
-p:where(.twp,.twp *),
-pre:where(.twp,.twp *) {
+blockquote:where(.comp,.comp *),
+dl:where(.comp,.comp *),
+dd:where(.comp,.comp *),
+h1:where(.comp,.comp *),
+h2:where(.comp,.comp *),
+h3:where(.comp,.comp *),
+h4:where(.comp,.comp *),
+h5:where(.comp,.comp *),
+h6:where(.comp,.comp *),
+hr:where(.comp,.comp *),
+figure:where(.comp,.comp *),
+p:where(.comp,.comp *),
+pre:where(.comp,.comp *) {
   margin: 0;
 }
 
-fieldset:where(.twp,.twp *) {
+fieldset:where(.comp,.comp *) {
   margin: 0;
   padding: 0;
 }
 
-legend:where(.twp,.twp *) {
+legend:where(.comp,.comp *) {
   padding: 0;
 }
 
-ol:where(.twp,.twp *),
-ul:where(.twp,.twp *),
-menu:where(.twp,.twp *) {
+ol:where(.comp,.comp *),
+ul:where(.comp,.comp *),
+menu:where(.comp,.comp *) {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -350,7 +355,7 @@ menu:where(.twp,.twp *) {
 Reset default styling for dialogs.
 */
 
-dialog:where(.twp,.twp *) {
+dialog:where(.comp,.comp *) {
   padding: 0;
 }
 
@@ -358,7 +363,7 @@ dialog:where(.twp,.twp *) {
 Prevent resizing textareas horizontally by default.
 */
 
-textarea:where(.twp,.twp *) {
+textarea:where(.comp,.comp *) {
   resize: vertical;
 }
 
@@ -367,15 +372,15 @@ textarea:where(.twp,.twp *) {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-input::-moz-placeholder:where(.twp,.twp *), textarea::-moz-placeholder:where(.twp,.twp *) {
+input::-moz-placeholder:where(.comp,.comp *), textarea::-moz-placeholder:where(.comp,.comp *) {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
   /* 2 */
 }
 
-input::placeholder:where(.twp,.twp *),
-textarea::placeholder:where(.twp,.twp *) {
+input::placeholder:where(.comp,.comp *),
+textarea::placeholder:where(.comp,.comp *) {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
@@ -386,8 +391,8 @@ textarea::placeholder:where(.twp,.twp *) {
 Set the default cursor for buttons.
 */
 
-button:where(.twp,.twp *),
-[role="button"]:where(.twp,.twp *) {
+button:where(.comp,.comp *),
+[role="button"]:where(.comp,.comp *) {
   cursor: pointer;
 }
 
@@ -395,7 +400,7 @@ button:where(.twp,.twp *),
 Make sure disabled buttons don't get the pointer cursor.
 */
 
-:disabled:where(.twp,.twp *) {
+:disabled:where(.comp,.comp *) {
   cursor: default;
 }
 
@@ -405,14 +410,14 @@ Make sure disabled buttons don't get the pointer cursor.
    This can trigger a poorly considered lint error in some tools but is included by design.
 */
 
-img:where(.twp,.twp *),
-svg:where(.twp,.twp *),
-video:where(.twp,.twp *),
-canvas:where(.twp,.twp *),
-audio:where(.twp,.twp *),
-iframe:where(.twp,.twp *),
-embed:where(.twp,.twp *),
-object:where(.twp,.twp *) {
+img:where(.comp,.comp *),
+svg:where(.comp,.comp *),
+video:where(.comp,.comp *),
+canvas:where(.comp,.comp *),
+audio:where(.comp,.comp *),
+iframe:where(.comp,.comp *),
+embed:where(.comp,.comp *),
+object:where(.comp,.comp *) {
   display: block;
   /* 1 */
   vertical-align: middle;
@@ -423,15 +428,15 @@ object:where(.twp,.twp *) {
 Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
 */
 
-img:where(.twp,.twp *),
-video:where(.twp,.twp *) {
+img:where(.comp,.comp *),
+video:where(.comp,.comp *) {
   max-width: 100%;
   height: auto;
 }
 
 /* Make elements with the HTML hidden attribute stay hidden by default */
 
-[hidden]:where(.twp,.twp *) {
+[hidden]:where(.comp,.comp *) {
   display: none;
 }
 
@@ -535,45 +540,371 @@ video:where(.twp,.twp *) {
   --tw-backdrop-sepia:  ;
 }
 
+.visible {
+  visibility: visible;
+}
+
+.static {
+  position: static;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.float-left {
+  float: left;
+}
+
+.m-1 {
+  margin: 0.25rem;
+}
+
 .m-2 {
   margin: 0.5rem;
 }
 
-.rounded {
-  border-radius: 0.25rem;
+.m-3 {
+  margin: 0.75rem;
 }
 
-.border {
-  border-width: 1px;
+.m-4 {
+  margin: 1rem;
 }
 
-.border-black\/50 {
-  border-color: rgb(0 0 0 / 0.5);
+.m-5 {
+  margin: 1.25rem;
 }
 
-.bg-zinc-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(212 212 216 / var(--tw-bg-opacity));
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.mx-3 {
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+}
+
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.mx-5 {
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+}
+
+.my-1 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.my-3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.my-5 {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.ml-3 {
+  margin-left: 0.75rem;
+}
+
+.ml-4 {
+  margin-left: 1rem;
+}
+
+.ml-5 {
+  margin-left: 1.25rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mr-3 {
+  margin-right: 0.75rem;
+}
+
+.mr-4 {
+  margin-right: 1rem;
+}
+
+.mr-5 {
+  margin-right: 1.25rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-5 {
+  margin-top: 1.25rem;
+}
+
+.block {
+  display: block;
+}
+
+.inline {
+  display: inline;
+}
+
+.flex {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}
+
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.resize {
+  resize: both;
+}
+
+.p-1 {
+  padding: 0.25rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.p-3 {
+  padding: 0.75rem;
 }
 
 .p-4 {
   padding: 1rem;
 }
 
-.font-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+.p-5 {
+  padding: 1.25rem;
 }
 
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
-.font-bold {
-  font-weight: 700;
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
-.text-sky-700 {
-  --tw-text-opacity: 1;
-  color: rgb(3 105 161 / var(--tw-text-opacity));
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.py-5 {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
+.pb-3 {
+  padding-bottom: 0.75rem;
+}
+
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
+.pb-5 {
+  padding-bottom: 1.25rem;
+}
+
+.pl-1 {
+  padding-left: 0.25rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
+}
+
+.pl-3 {
+  padding-left: 0.75rem;
+}
+
+.pl-4 {
+  padding-left: 1rem;
+}
+
+.pl-5 {
+  padding-left: 1.25rem;
+}
+
+.pr-1 {
+  padding-right: 0.25rem;
+}
+
+.pr-2 {
+  padding-right: 0.5rem;
+}
+
+.pr-3 {
+  padding-right: 0.75rem;
+}
+
+.pr-4 {
+  padding-right: 1rem;
+}
+
+.pr-5 {
+  padding-right: 1.25rem;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
+}
+
+.pt-3 {
+  padding-top: 0.75rem;
+}
+
+.pt-4 {
+  padding-top: 1rem;
+}
+
+.pt-5 {
+  padding-top: 1.25rem;
+}
+
+.underline {
+  text-decoration-line: underline;
+}
+
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }

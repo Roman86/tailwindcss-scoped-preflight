@@ -16,10 +16,14 @@
     "dist"
   ],
   "scripts": {
+    "prepublishOnly": "npm run build && npm run test",
     "build": "microbundle --target node -f modern,esm,cjs",
-    "prepublishOnly": "npm run build",
-    "dev": "microbundle --target node -f modern,esm,cjs -w",
-    "demo": "tailwindcss -i ./demo/stylesin.css -o ./demo/stylesout.css -w"
+    "build/watch": "microbundle --target node -f modern,esm,cjs -w",
+    "test": "npm run test/build && playwright test",
+    "test/build": "npx tsx e2e/build-e2e.ts",
+    "test/watch": "npx tsx e2e/build-e2e.ts --watch",
+    "test/serve": "http-server ./e2e -p 8080 -c-1",
+    "test/ui": "playwright test --ui"
   },
   "repository": {
     "type": "git",
@@ -39,10 +43,13 @@
   "author": "Roman Kozodoi",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^6",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
+    "http-server": "^14.1.1",
     "microbundle": "^0.15.1",
     "prettier": "^3.2.5",
     "prettier-plugin-multiline-arrays": "^3.0.4"
