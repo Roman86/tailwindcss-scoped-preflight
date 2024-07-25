@@ -32,13 +32,13 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 
 ## Strategies overview
 
-For ease of use, there are 3 pre-bundled isolation strategies available (as named exports) that cover 99% cases:
+For ease of use, there are 2 pre-bundled isolation strategies available (as named exports) that cover 99% cases:
 
-|                                   Pre-bundled strategy                                   | Description                                                                                                                                                                                                                                                                                                                                                          |
-| :--------------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|   `isolateInsideOfContainer`<br/><img src="docs/inside.png" alt="inside" width="220"/>   | Everything is protected from the preflight styles, except specified Tailwind root(s).<br/>Use it when you have all the tailwind-powered stuff **isolated under some root container**.                                                                                                                                                                                |
-| `isolateOutsideOfContainer`<br/><img src="docs/outside.png" alt="outside" width="220"/>  | Protects specific root(s) from the preflight styles - Tailwind is everywhere outside.<br/>Use it when you have Tailwind powered stuff everywhere as usual, but you want to **exclude some part of the DOM** from being affected by the preflight styles.                                                                                                             |
-| `isolateForComponents`<br/><img src="docs/components.png" alt="components" width="220"/> | Everything is protected from the preflight styles, except components marked with the selector of your choice.<br/>Use it when you want the preflight styles to be applied only to particular elements **immediately** (without extra roots or wrappers).<br/>Good for components - just specify some unique css class for all your components and use them anywhere. |
+|                                           Pre-bundled strategy                                            | Description                                                                                                                                                                                                                                                                                                                                                                            |
+| :-------------------------------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|           `isolateInsideOfContainer`<br/><img src="docs/inside.png" alt="inside" width="220"/>            | Everything is protected from the preflight styles, except specified Tailwind root(s).<br/>Use it when you have all the tailwind-powered stuff **isolated under some root container**.                                                                                                                                                                                                  |
+|          `isolateOutsideOfContainer`<br/><img src="docs/outside.png" alt="outside" width="220"/>          | Protects specific root(s) from the preflight styles - Tailwind is everywhere outside.<br/>Use it when you have Tailwind powered stuff everywhere as usual, but you want to **exclude some part of the DOM** from being affected by the preflight styles.                                                                                                                               |
+| ~~`isolateForComponents`~~ (deprecated)<br/><img src="docs/components.png" alt="components" width="220"/> | It generates the same CSS as `isolateInsideOfContainer` with small difference about root styles - so I just put it as an option of `isolateInsideOfContainer` strategy to simplify the strategy selection while still be able to use both modes if needed. If you use this strategy - migrate to `isolateInsideOfContainer` and set `rootStyles` to `add :where` for the same effect). |
 
 🔨 If none of these strategies work for your case, or something isn't perfect - you can [create your own strategy](#your-owncustom-isolation-strategy).
 
@@ -52,7 +52,8 @@ npm i -D tailwindcss-scoped-preflight
 
 ### 2. Update your Tailwind CSS configuration
 
-#### 2.1 Case: you want to lock Tailwind preflight styles inside of some root container (or multiple containers), so they couldn't affect the rest of your page.
+#### 2.1 Case: you want to lock Tailwind preflight styles inside of some root container (or multiple containers), so they couldn't affect the rest of your web page.
+
 Use `isolateInsideOfContainer`:
 
 ```javascript
@@ -76,7 +77,16 @@ const config = {
 exports.default = config;
 ```
 
+|         Option          | Value                         | Description                                                                                                 |
+| :---------------------: | ----------------------------- | ----------------------------------------------------------------------------------------------------------- |
+|   `except` (optional)   | CSS selector                  | to exclude some elements under .twp from being preflighted, like external markup                            |
+| `rootStyles` (optional) | `move to container` (default) | moves the root styles to the container styles (by simply replacing the selector)                            |
+|                         | `add :where`                  | adds ` :where` to the root selector so styles are still in roots, but only matching items would be affected |
+|   `remove` (optional)   | array of CSS selectors        | Removes preflight styles                                                                                    |
+|   `ignore` (optional)   | array of CSS selectors        | Keeps these preflight selectors untouched (skipped by the isolation strategy)                               |
+
 #### 2.2 Case: you want Tailwind preflight styles to be everywhere except some root container(s) that may collide.
+
 Use `isolateOutsideOfContainer`:
 
 ```javascript
@@ -99,6 +109,12 @@ const config = {
 
 exports.default = config;
 ```
+
+|       Option        | Value                  | Description                                                                                                                       |
+| :-----------------: | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+|  `plus` (optional)  | CSS selector           | if you have your Tailwind components under .no-twp, you need them to be preflighted. Specify their root selector with this option |
+| `remove` (optional) | array of CSS selectors | Removes preflight styles                                                                                                          |
+| `ignore` (optional) | array of CSS selectors | Keeps these preflight selectors untouched (skipped by the isolation strategy)                                                     |
 
 ### 3. Use specified selectors in your DOM
 

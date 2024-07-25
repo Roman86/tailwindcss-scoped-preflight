@@ -28,6 +28,9 @@ const roots = new Set([
   'body',
   ':host',
 ]);
+function isRootSelector(selector: string) {
+  return roots.has(selector);
+}
 
 /**
  * Isolates the TailwindCSS preflight styles inside of the container (assuming all the TailwindCSS is inside of this container)
@@ -36,28 +39,36 @@ const roots = new Set([
  * @param options
  * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
  * @param options.remove - list of preflight CSS selectors to remove from the final CSS - use it if you have any specific conflicts and really want to remove some preflight rules
+ * @param options.rootStyles - 'move to container' (default) - moves the root styles to the container styles (by simply replacing the selector), 'add :where' - adds ` :where` to the root selector so styles are still in roots, but only matching items would be affected
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container (example)
  */
-export const isolateInsideOfContainer: SelectorBasedStrategy<{ except?: string }> = (
-  containerSelectors,
-  options,
-) => {
+export const isolateInsideOfContainer: SelectorBasedStrategy<{
+  except?: string;
+  rootStyles?: 'move to container' | 'add :where';
+}> = (containerSelectors, options) => {
   const whereNotExcept =
     typeof options?.except === 'string' && options.except
       ? `:where(:not(${options.except},${options.except} *))`
       : '';
-  return ({ ruleSelector }) =>
-    optionsHandlerForIgnoreAndRemove(ruleSelector, options) ??
-    (roots.has(ruleSelector)
-      ? [containerSelectors]
-          .flat()
-          .map((cont) => `${cont}${whereNotExcept}`)
-          .join(',')
-      : [containerSelectors]
-          .flat()
-          .map((s) => `${ruleSelector}:where(${s},${s} *)${whereNotExcept}`)
-          .join(','));
+
+  const selectorsArray = [containerSelectors].flat();
+  const whereDirect = `:where(${selectorsArray.join(',')})`;
+  const whereWithSubs = `:where(${selectorsArray.map((s) => `${s},${s} *`).join(',')})`;
+  return ({ ruleSelector }) => {
+    const handled = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
+    if (handled != null) {
+      return handled;
+    }
+
+    if (isRootSelector(ruleSelector)) {
+      if (options?.rootStyles === 'add :where') {
+        return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
+      }
+      return selectorsArray.map((s) => `${s}${whereNotExcept}`).join(',');
+    }
+    return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
+  };
 };
 
 /**
@@ -89,7 +100,7 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
       return ignoreOrRemove;
     }
 
-    if (roots.has(ruleSelector)) {
+    if (isRootSelector(ruleSelector)) {
       return ruleSelector;
     }
 
@@ -103,7 +114,8 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
 };
 
 /**
- * Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
+ * @deprecated Use `isolateInsideOfContainer` with rootStyles option set to 'add :where'
+ * @description Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
  * @param componentSelectors
  * @param options
  * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
@@ -123,7 +135,7 @@ export const isolateForComponents: SelectorBasedStrategy = (
 
   return ({ ruleSelector }) =>
     optionsHandlerForIgnoreAndRemove(ruleSelector, options) ??
-    (roots.has(ruleSelector)
+    (isRootSelector(ruleSelector)
       ? `${ruleSelector} ${whereComponentSelectorsDirect}`
       : `${ruleSelector}${whereComponentSelectorsWithSubs}`);
 };

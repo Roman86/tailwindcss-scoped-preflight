@@ -19,6 +19,9 @@ const optionsHandlerForIgnoreAndRemove = (selector, {
   return null;
 };
 const roots = new Set(['html', 'body', ':host']);
+function isRootSelector(selector) {
+  return roots.has(selector);
+}
 /**
  * Isolates the TailwindCSS preflight styles inside of the container (assuming all the TailwindCSS is inside of this container)
  *
@@ -26,16 +29,29 @@ const roots = new Set(['html', 'body', ':host']);
  * @param options
  * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
  * @param options.remove - list of preflight CSS selectors to remove from the final CSS - use it if you have any specific conflicts and really want to remove some preflight rules
+ * @param options.rootStyles - 'move to container' (default) - moves the root styles to the container styles (by simply replacing the selector), 'add :where' - adds ` :where` to the root selector so styles are still in roots, but only matching items would be affected
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container (example)
  */
 const isolateInsideOfContainer = (containerSelectors, options) => {
   const whereNotExcept = typeof (options == null ? void 0 : options.except) === 'string' && options.except ? `:where(:not(${options.except},${options.except} *))` : '';
+  const selectorsArray = [containerSelectors].flat();
+  const whereDirect = `:where(${selectorsArray.join(',')})`;
+  const whereWithSubs = `:where(${selectorsArray.map(s => `${s},${s} *`).join(',')})`;
   return ({
     ruleSelector
   }) => {
-    var _optionsHandlerForIgn;
-    return (_optionsHandlerForIgn = optionsHandlerForIgnoreAndRemove(ruleSelector, options)) != null ? _optionsHandlerForIgn : roots.has(ruleSelector) ? [containerSelectors].flat().map(cont => `${cont}${whereNotExcept}`).join(',') : [containerSelectors].flat().map(s => `${ruleSelector}:where(${s},${s} *)${whereNotExcept}`).join(',');
+    const handled = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
+    if (handled != null) {
+      return handled;
+    }
+    if (isRootSelector(ruleSelector)) {
+      if ((options == null ? void 0 : options.rootStyles) === 'add :where') {
+        return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
+      }
+      return selectorsArray.map(s => `${s}${whereNotExcept}`).join(',');
+    }
+    return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
   };
 };
 /**
@@ -57,7 +73,7 @@ const isolateOutsideOfContainer = (containerSelectors, options) => {
     if (ignoreOrRemove != null) {
       return ignoreOrRemove;
     }
-    if (roots.has(ruleSelector)) {
+    if (isRootSelector(ruleSelector)) {
       return ruleSelector;
     }
     return [`${ruleSelector}${whereNotContainerSelector}`, insideOfContainerLogic == null ? void 0 : insideOfContainerLogic({
@@ -66,7 +82,8 @@ const isolateOutsideOfContainer = (containerSelectors, options) => {
   };
 };
 /**
- * Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
+ * @deprecated Use `isolateInsideOfContainer` with rootStyles option set to 'add :where'
+ * @description Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
  * @param componentSelectors
  * @param options
  * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
@@ -81,8 +98,8 @@ const isolateForComponents = (componentSelectors, options) => {
   return ({
     ruleSelector
   }) => {
-    var _optionsHandlerForIgn2;
-    return (_optionsHandlerForIgn2 = optionsHandlerForIgnoreAndRemove(ruleSelector, options)) != null ? _optionsHandlerForIgn2 : roots.has(ruleSelector) ? `${ruleSelector} ${whereComponentSelectorsDirect}` : `${ruleSelector}${whereComponentSelectorsWithSubs}`;
+    var _optionsHandlerForIgn;
+    return (_optionsHandlerForIgn = optionsHandlerForIgnoreAndRemove(ruleSelector, options)) != null ? _optionsHandlerForIgn : isRootSelector(ruleSelector) ? `${ruleSelector} ${whereComponentSelectorsDirect}` : `${ruleSelector}${whereComponentSelectorsWithSubs}`;
   };
 };
 
