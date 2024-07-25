@@ -127,59 +127,17 @@ export function MyApp({ children }: PropsWithChildren) {
 }
 ```
 
-## Component strategy example
-
-Sometimes you might want only specific components to be styled (nothing else) to put them together with some other UI library components (and to have them completely unaffected).
-In this case `isolateForComponents` strategy might be what you need.
-
-```javascript
-// tailwind.config.js
-
-import { scopedPreflightStyles, isolateForComponents } from 'tailwindcss-scoped-preflight';
-
-/** @type {import("tailwindcss").Config} */
-const config = {
-  // ...
-  plugins: [
-    // ...
-    scopedPreflightStyles({
-      isolationStrategy: isolateForComponents('.comp'),
-    }),
-  ],
-};
-
-exports.default = config;
-```
-
-```tsx
-// MyTailwindButton.tsx
-
-import { type PropsWithChildren } from 'react';
-
-export function MyTailwindButton({ children }: PropsWithChildren): ReactElement {
-  return (
-    <button className={'comp'}>
-      {/* this button won't have a default border and background
-      because of Tailwind CSS preflight styles applied to the elements
-      with the .comp class immediately (as per the configuration).
-      All the other buttons around will have their original/default styles */}
-      {children}
-    </button>
-  );
-}
-```
-
 # Configuration examples
 
 ### Using the strategy for multiple selectors
 
 ```diff
 scopedPreflightStyles({
-  isolationStrategy: isolateForComponents(
--   '.comp',
+  isolationStrategy: isolateInsideOfContainer(
+-   '.twp',
 +   [
-+     '.comp',
 +     '.twp',
++     '[twp]',
 +   ],
   ),
 })
@@ -191,8 +149,8 @@ scopedPreflightStyles({
 
 ```diff
 scopedPreflightStyles({
-  isolationStrategy: isolateForComponents(
-    '.comp',
+  isolationStrategy: isolateInsideOfContainer(
+    '.twp',
     // every strategy provides some base options to fine tune the transformation
 +   {
 +     ignore: ["html", ":host", "*"],
@@ -205,8 +163,8 @@ scopedPreflightStyles({
 
 ```diff
 scopedPreflightStyles({
-  isolationStrategy: isolateForComponents(
-    '.comp',
+  isolationStrategy: isolateInsideOfContainer(
+    '.twp',
 +   {
 +     remove: ["body", ":before", ":after"],
 +   },
@@ -256,8 +214,8 @@ const config = {
         // Caution! Don't forget to return the value,
         // falsy/nullish result will remove the rule.
         // Either return the original ruleSelector, or inject some of existing strategies,
-        // let's fallback to the isolateForComponents strategy for this demo:
-        return isolateForComponents('.twp')({ ruleSelector, ...whateverElse });
+        // let's fallback to the isolateInsideOfContainer strategy for this demo:
+        return isolateInsideOfContainer('.twp')({ ruleSelector, ...whateverElse });
       },
     }),
   ],
@@ -277,7 +235,7 @@ You may configure the modifications in a declarative manner (as an object) or pr
 
 ```javascript
 scopedPreflightStyles({
-  isolationStrategy: isolateForComponents('.comp'), // whatever
+  isolationStrategy: isolateInsideOfContainer('.twp'), // whatever
   modifyPreflightStyles: {
     html: {
       // removes the line-height for the html selector
@@ -299,7 +257,7 @@ scopedPreflightStyles({
 
 ```javascript
 scopedPreflightStyles({
-  isolationStrategy: isolateForComponents('.comp'), // whatever
+  isolationStrategy: isolateInsideOfContainer('.twp'), // whatever
   modifyPreflightStyles: ({ selectorSet, property, value }) => {
     // let's say you want to override the font family (no matter what the rule selector is)
     if (property === 'font-family' && value !== 'inherit') {
@@ -340,8 +298,6 @@ import {
 +       isolationStrategy: isolateInsideOfContainer('.twp'),
       }),
 ```
-
-Is some cases you may have to pick the isolateForComponents strategy - try which works best for you.
 
 #### for 'except matched' mode users
 
