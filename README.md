@@ -1,5 +1,8 @@
 # Tailwind CSS + UI libraries = no conflicts 🚀
 
+![NPM Downloads](https://img.shields.io/npm/dw/tailwindcss-scoped-preflight)
+![GitHub Repo stars](https://img.shields.io/github/stars/Roman86/tailwindcss-scoped-preflight)
+
 ### What
 
 [Tailwind CSS](https://tailwindcss.com/) plugin
@@ -13,9 +16,9 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
 So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
 
-### ❤️ If you'd like to say thanks
+### ❤️ If you'd like to say thanks, buy me a coffee
 
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="108" height="30">](https://www.buymeacoffee.com/romanjs)
+[<img src="src/bmc_qr.png" alt="Buy Me A Coffee" width="120" height="120">](https://www.buymeacoffee.com/romanjs)
 <br/>Support/contact [tiny website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
 
 ## Version 3 is here 🎉
