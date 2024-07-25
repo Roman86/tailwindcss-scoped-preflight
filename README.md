@@ -81,11 +81,11 @@ exports.default = config;
 ```
 
 |         Option          | Value                         | Description                                                                                                 |
-| :---------------------: | ----------------------------- | ----------------------------------------------------------------------------------------------------------- |
+|:-----------------------:|-------------------------------|-------------------------------------------------------------------------------------------------------------|
 |   `except` (optional)   | CSS selector                  | to exclude some elements under .twp from being preflighted, like external markup                            |
 | `rootStyles` (optional) | `move to container` (default) | moves the root styles to the container styles (by simply replacing the selector)                            |
 |                         | `add :where`                  | adds ` :where` to the root selector so styles are still in roots, but only matching items would be affected |
-|   `remove` (optional)   | array of CSS selectors        | Removes preflight styles                                                                                    |
+|   `remove` (optional)   | array of CSS selectors        | Removes specified (with CSS selectors) preflight styles                                                     |
 |   `ignore` (optional)   | array of CSS selectors        | Keeps these preflight selectors untouched (skipped by the isolation strategy)                               |
 
 #### 2.2 Case: you want Tailwind preflight styles to be everywhere except some root container(s) that may collide.
@@ -114,9 +114,9 @@ exports.default = config;
 ```
 
 |       Option        | Value                  | Description                                                                                                                       |
-| :-----------------: | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+|:-------------------:|------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 |  `plus` (optional)  | CSS selector           | if you have your Tailwind components under .no-twp, you need them to be preflighted. Specify their root selector with this option |
-| `remove` (optional) | array of CSS selectors | Removes preflight styles                                                                                                          |
+| `remove` (optional) | array of CSS selectors | Removes specified (with CSS selectors) preflight styles                                                                           |
 | `ignore` (optional) | array of CSS selectors | Keeps these preflight selectors untouched (skipped by the isolation strategy)                                                     |
 
 ### 3. Use specified selectors in your DOM
