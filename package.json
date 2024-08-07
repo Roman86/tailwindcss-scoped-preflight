@@ -43,16 +43,20 @@
   "author": "Roman Kozodoi",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.45.0",
-    "@types/node": "^20.14.9",
-    "@typescript-eslint/eslint-plugin": "^6",
-    "eslint": "^8.56.0",
+    "@eslint/js": "^9.8.0",
+    "@playwright/test": "^1.45.3",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
     "http-server": "^14.1.1",
     "microbundle": "^0.15.1",
-    "prettier": "^3.2.5",
-    "prettier-plugin-multiline-arrays": "^3.0.4"
+    "prettier": "^3.3.3",
+    "prettier-plugin-multiline-arrays": "^3.0.6",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1"
   },
   "peerDependencies": {
     "postcss": "^8",

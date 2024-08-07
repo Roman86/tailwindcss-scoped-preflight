@@ -27,7 +27,7 @@ interface PluginOptions {
 export declare const scopedPreflightStyles: {
     (options: PluginOptions): {
         handler: import("tailwindcss/types/config.js").PluginCreator;
-        config?: Partial<import("tailwindcss/types/config.js").Config> | undefined;
+        config?: Partial<import("tailwindcss/types/config.js").Config>;
     };
     __isOptionsFunction: true;
 };
