@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "prepublishOnly": "npm run build && npm run test",
-    "build": "microbundle --target node -f modern,esm,cjs",
+    "build": "rm -rf dist && microbundle --target node -f modern,esm,cjs",
     "build/watch": "microbundle --target node -f modern,esm,cjs -w",
     "test": "npm run test/build && playwright test",
     "test/build": "npx tsx e2e/build-e2e.ts",
