@@ -10,7 +10,7 @@
   "exports": "./dist/plugin.mjs",
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "microbundle --target node -f modern,esm,cjs",
+    "build": "rm -rf dist && microbundle --target node -f modern,esm,cjs",
     "build/watch": "microbundle --target node -f modern,esm,cjs -w",
     "dev": "microbundle --target node -f modern,esm,cjs -w"
   },
