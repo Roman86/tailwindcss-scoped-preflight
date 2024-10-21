@@ -1,7 +1,9 @@
-import { withOptions } from 'tailwindcss/plugin.js';
+import TailwindPlugin from 'tailwindcss/plugin.js';
 import postcss from 'postcss';
 import { type CSSRuleObject } from 'tailwindcss/types/config.js';
 import { readFileSync } from 'fs';
+
+const { withOptions } = TailwindPlugin;
 
 interface PropsFilterInput {
   selectorSet: Set<string>;

@@ -1,4 +1,4 @@
-import { withOptions } from 'tailwindcss/plugin.js';
+import TailwindPlugin from 'tailwindcss/plugin.js';
 import postcss from 'postcss';
 import { readFileSync } from 'fs';
 
@@ -99,6 +99,9 @@ const isolateForComponents = (componentSelectors, options) => {
   };
 };
 
+const {
+  withOptions
+} = TailwindPlugin;
 /**
  * TailwindCSS plugin to scope the preflight styles
  * @param isolationStrategy - function to transform the preflight CSS selectors,

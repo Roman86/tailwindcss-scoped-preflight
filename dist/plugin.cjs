@@ -1,9 +1,10 @@
-var plugin_js = require('tailwindcss/plugin.js');
+var TailwindPlugin = require('tailwindcss/plugin.js');
 var postcss = require('postcss');
 var fs = require('fs');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
+var TailwindPlugin__default = /*#__PURE__*/_interopDefaultLegacy(TailwindPlugin);
 var postcss__default = /*#__PURE__*/_interopDefaultLegacy(postcss);
 
 const optionsHandlerForIgnoreAndRemove = (selector, {
@@ -103,6 +104,9 @@ const isolateForComponents = (componentSelectors, options) => {
   };
 };
 
+const {
+  withOptions
+} = TailwindPlugin__default["default"];
 /**
  * TailwindCSS plugin to scope the preflight styles
  * @param isolationStrategy - function to transform the preflight CSS selectors,
@@ -113,7 +117,7 @@ const isolateForComponents = (componentSelectors, options) => {
  * @param modifyPreflightStyles - function to modify the preflight CSS properties and their values, return null to remove the property. Any other returned value will be used as a new value for the property. If you don't want to change it - return the old value (provided in argument object as `value`).
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
-const scopedPreflightStyles = plugin_js.withOptions(({
+const scopedPreflightStyles = withOptions(({
   isolationStrategy,
   propsFilter,
   modifyPreflightStyles
