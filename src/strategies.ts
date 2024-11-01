@@ -32,6 +32,10 @@ function isRootSelector(selector: string) {
   return roots.has(selector);
 }
 
+function isPseudoElement(selector: string) {
+  return /^::/.test(selector);
+}
+
 /**
  * Isolates the TailwindCSS preflight styles inside of the container (assuming all the TailwindCSS is inside of this container)
  *
@@ -54,7 +58,8 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
 
   const selectorsArray = [containerSelectors].flat();
   const whereDirect = `:where(${selectorsArray.join(',')})`;
-  const whereWithSubs = `:where(${selectorsArray.map((s) => `${s},${s} *`).join(',')})`;
+  const whereWithSubs = `:where(${selectorsArray.map((s) => `${s},${s} *`).join(',')})${whereNotExcept}`;
+
   return ({ ruleSelector }) => {
     const handled = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
     if (handled != null) {
@@ -67,7 +72,12 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
       }
       return selectorsArray.map((s) => `${s}${whereNotExcept}`).join(',');
     }
-    return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
+
+    if (isPseudoElement(ruleSelector)) {
+      return selectorsArray.map((s) => `${s} ${ruleSelector}, ${s} *${ruleSelector}`).join(',');
+    }
+
+    return `${ruleSelector}${whereWithSubs}`;
   };
 };
 
@@ -87,7 +97,7 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
   const whereNotContainerSelector = `:where(:not(${[containerSelectors]
     .flat()
     .map((s) => `${s},${s} *`)
-    .join(',')}))`;
+    .join(',')}))${options?.except ? `:where(:not(${options.except},${options.except} *))` : ''}`;
 
   const insideOfContainerLogic =
     typeof options?.plus === 'string' && options.plus
@@ -102,6 +112,10 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
 
     if (isRootSelector(ruleSelector)) {
       return ruleSelector;
+    }
+
+    if (isPseudoElement(ruleSelector)) {
+      return `${ruleSelector}${whereNotContainerSelector}`;
     }
 
     return [
@@ -131,11 +145,22 @@ export const isolateForComponents: SelectorBasedStrategy = (
   const whereComponentSelectorsDirect = `:where(${componentSelectorsArray.join(',')})`;
   const whereComponentSelectorsWithSubs = `:where(${componentSelectorsArray
     .map((s) => `${s},${s} *`)
-    .join(',')})`;
+    .join(',')})${options?.except ? `:where(:not(${options.except},${options.except} *))` : ''}`;
 
-  return ({ ruleSelector }) =>
-    optionsHandlerForIgnoreAndRemove(ruleSelector, options) ??
-    (isRootSelector(ruleSelector)
-      ? `${ruleSelector} ${whereComponentSelectorsDirect}`
-      : `${ruleSelector}${whereComponentSelectorsWithSubs}`);
+  return ({ ruleSelector }) => {
+    const handled = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
+    if (handled != null) {
+      return handled;
+    }
+
+    if (isRootSelector(ruleSelector)) {
+      return `${ruleSelector} ${whereComponentSelectorsDirect}`;
+    }
+
+    if (isPseudoElement(ruleSelector)) {
+      return componentSelectorsArray.map((s) => `${s} ${ruleSelector}, ${s} *${ruleSelector}`).join(',');
+    }
+
+    return `${ruleSelector}${whereComponentSelectorsWithSubs}`;
+  };
 };
