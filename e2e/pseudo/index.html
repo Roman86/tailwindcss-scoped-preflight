@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Outside, 2 selectors</title>
+    <link rel="stylesheet" href="stylesout.css" />
+  </head>
+  <body>
+    <div class="no-tw">
+      <div class="after:block after:size-12 after:bg-blue-500">
+        <!-- should be empty div-->
+      </div>
+    </div>
+    <div id="somecontainer">
+      <div class="after:block after:size-12 after:bg-blue-500">should have blue square after</div>
+    </div>
+  </body>
+</html>

@@ -17,3 +17,11 @@ export async function transparentBg(locator: Locator) {
 export async function coloredBg(locator: Locator) {
   return expect(locator).toHaveCSS('background-color', new RegExp(`^(?!${tailwindTransparent})`));
 }
+
+export async function hasHeight(locator: Locator) {
+  return expect(locator).toHaveCSS('height', /^[^0]+/);
+}
+
+export async function hasNoHeight(locator: Locator) {
+  return expect(locator).toHaveCSS('height', '0px');
+}
