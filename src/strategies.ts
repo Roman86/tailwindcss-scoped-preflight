@@ -33,7 +33,7 @@ function isRootSelector(selector: string) {
 }
 
 function isPseudoElementSelector(ruleSelector: string) {
-  return ruleSelector.includes('::');
+  return ruleSelector.includes('::') && !ruleSelector.includes('::placeholder');
 }
 
 /**
@@ -74,7 +74,7 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
         return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
       }
       return selectorsArray.map((s) => `${s}${whereNotExcept}`).join(',');
-    } else if (ruleSelector === '*' || isPseudoElementSelector(ruleSelector)) {
+    } else if (ruleSelector === '*' || isPseudoElementSelector(ruleSelector) || ruleSelector.includes('::placeholder')) {
       return prependWithCustomSelectors(ruleSelector);
     }
     return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
