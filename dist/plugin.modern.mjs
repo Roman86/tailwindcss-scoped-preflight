@@ -2,6 +2,26 @@ import TailwindPlugin from 'tailwindcss/plugin.js';
 import postcss from 'postcss';
 import { readFileSync } from 'fs';
 
+function _extends() {
+  return _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+    }
+    return n;
+  }, _extends.apply(null, arguments);
+}
+function _objectWithoutPropertiesLoose(r, e) {
+  if (null == r) return {};
+  var t = {};
+  for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
+    if (e.includes(n)) continue;
+    t[n] = r[n];
+  }
+  return t;
+}
+
+const _excluded = ["ruleSelector"];
 const optionsHandlerForIgnoreAndRemove = (selector, {
   ignore,
   remove
@@ -17,6 +37,9 @@ const optionsHandlerForIgnoreAndRemove = (selector, {
 const roots = new Set(['html', 'body', ':host']);
 function isRootSelector(selector) {
   return roots.has(selector);
+}
+function isBeforeOrAfter(ruleSelector) {
+  return ruleSelector.includes('::before') || ruleSelector.includes('::after');
 }
 function isPseudoElementSelector(ruleSelector) {
   return ruleSelector.includes('::');
@@ -37,7 +60,6 @@ const isolateInsideOfContainer = (containerSelectors, options) => {
   const selectorsArray = [containerSelectors].flat();
   const whereDirect = `:where(${selectorsArray.join(',')})`;
   const whereWithSubs = `:where(${selectorsArray.map(s => `${s},${s} *`).join(',')})`;
-  const prependCustomSelectorWithMinimalSpecificity = ruleSelector => selectorsArray.map(s => `:where(${s}) ${ruleSelector}`).join(',');
   return ({
     ruleSelector
   }) => {
@@ -50,10 +72,13 @@ const isolateInsideOfContainer = (containerSelectors, options) => {
         return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
       }
       return selectorsArray.map(s => `${s}${whereNotExcept}`).join(',');
+    } else if (isBeforeOrAfter(ruleSelector)) {
+      return `${whereWithSubs}${whereNotExcept}${ruleSelector}`;
     } else if (isPseudoElementSelector(ruleSelector)) {
-      return prependCustomSelectorWithMinimalSpecificity(ruleSelector);
+      return `${whereWithSubs}${whereNotExcept} ${ruleSelector}`;
+    } else {
+      return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
     }
-    return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
   };
 };
 /**
@@ -68,9 +93,11 @@ const isolateInsideOfContainer = (containerSelectors, options) => {
 const isolateOutsideOfContainer = (containerSelectors, options) => {
   const whereNotContainerSelector = `:where(:not(${[containerSelectors].flat().map(s => `${s},${s} *`).join(',')}))`;
   const insideOfContainerLogic = typeof (options == null ? void 0 : options.plus) === 'string' && options.plus ? isolateInsideOfContainer(options.plus) : null;
-  return ({
-    ruleSelector
-  }) => {
+  return _ref => {
+    let {
+        ruleSelector
+      } = _ref,
+      rest = _objectWithoutPropertiesLoose(_ref, _excluded);
     const ignoreOrRemove = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
     if (ignoreOrRemove != null) {
       return ignoreOrRemove;
@@ -78,9 +105,9 @@ const isolateOutsideOfContainer = (containerSelectors, options) => {
     if (isRootSelector(ruleSelector)) {
       return ruleSelector;
     }
-    return [`${ruleSelector}${whereNotContainerSelector}`, insideOfContainerLogic == null ? void 0 : insideOfContainerLogic({
+    return [isBeforeOrAfter(ruleSelector) ? `${whereNotContainerSelector}${ruleSelector}` : isPseudoElementSelector(ruleSelector) ? `${whereNotContainerSelector} ${ruleSelector}` : `${ruleSelector}${whereNotContainerSelector}`, insideOfContainerLogic == null ? void 0 : insideOfContainerLogic(_extends({
       ruleSelector
-    })].filter(Boolean).join(',');
+    }, rest))].filter(Boolean).join(',');
   };
 };
 /**

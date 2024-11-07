@@ -112,8 +112,8 @@
 */
 
 *:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
-:where(#somecontainer) ::before,
-:where(#somecontainer) ::after {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *))::before,
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *))::after {
   box-sizing: border-box;
   /* 1 */
   border-width: 0;
@@ -124,8 +124,8 @@
   /* 2 */
 }
 
-:where(#somecontainer) ::before,
-:where(#somecontainer) ::after {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *))::before,
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *))::after {
   --tw-content: '';
 }
 
@@ -378,8 +378,8 @@ progress:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
 Correct the cursor style of increment and decrement buttons in Safari.
 */
 
-:where(#somecontainer) ::-webkit-inner-spin-button,
-:where(#somecontainer) ::-webkit-outer-spin-button {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) ::-webkit-inner-spin-button,
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) ::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -399,7 +399,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 Remove the inner padding in Chrome and Safari on macOS.
 */
 
-:where(#somecontainer) ::-webkit-search-decoration {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -408,7 +408,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 2. Change font properties to `inherit` in Safari.
 */
 
-:where(#somecontainer) ::-webkit-file-upload-button {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) ::-webkit-file-upload-button {
   -webkit-appearance: button;
   /* 1 */
   font: inherit;
@@ -481,15 +481,15 @@ textarea:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-:where(#somecontainer) input::-moz-placeholder, :where(#somecontainer) textarea::-moz-placeholder {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) input::-moz-placeholder, :where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) textarea::-moz-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
   /* 2 */
 }
 
-:where(#somecontainer) input::placeholder,
-:where(#somecontainer) textarea::placeholder {
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) input::placeholder,
+:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) textarea::placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;

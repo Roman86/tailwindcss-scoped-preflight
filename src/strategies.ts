@@ -32,6 +32,9 @@ function isRootSelector(selector: string) {
   return roots.has(selector);
 }
 
+function isBeforeOrAfter(ruleSelector: string) {
+  return ruleSelector.includes('::before') || ruleSelector.includes('::after');
+}
 function isPseudoElementSelector(ruleSelector: string) {
   return ruleSelector.includes('::');
 }
@@ -60,9 +63,6 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
   const whereDirect = `:where(${selectorsArray.join(',')})`;
   const whereWithSubs = `:where(${selectorsArray.map((s) => `${s},${s} *`).join(',')})`;
 
-  const prependCustomSelectorWithMinimalSpecificity = (ruleSelector: string) =>
-    selectorsArray.map((s) => `:where(${s}) ${ruleSelector}`).join(',');
-
   return ({ ruleSelector }) => {
     const handled = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
     if (handled != null) {
@@ -74,10 +74,13 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
         return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
       }
       return selectorsArray.map((s) => `${s}${whereNotExcept}`).join(',');
+    } else if (isBeforeOrAfter(ruleSelector)) {
+      return `${whereWithSubs}${whereNotExcept}${ruleSelector}`;
     } else if (isPseudoElementSelector(ruleSelector)) {
-      return prependCustomSelectorWithMinimalSpecificity(ruleSelector);
+      return `${whereWithSubs}${whereNotExcept} ${ruleSelector}`;
+    } else {
+      return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
     }
-    return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
   };
 };
 
@@ -104,7 +107,7 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
       ? isolateInsideOfContainer(options.plus)
       : null;
 
-  return ({ ruleSelector }) => {
+  return ({ ruleSelector, ...rest }) => {
     const ignoreOrRemove = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
     if (ignoreOrRemove != null) {
       return ignoreOrRemove;
@@ -115,8 +118,12 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
     }
 
     return [
-      `${ruleSelector}${whereNotContainerSelector}`,
-      insideOfContainerLogic?.({ ruleSelector }),
+      isBeforeOrAfter(ruleSelector)
+        ? `${whereNotContainerSelector}${ruleSelector}`
+        : isPseudoElementSelector(ruleSelector)
+          ? `${whereNotContainerSelector} ${ruleSelector}`
+          : `${ruleSelector}${whereNotContainerSelector}`,
+      insideOfContainerLogic?.({ ruleSelector, ...rest }),
     ]
       .filter(Boolean)
       .join(',');

@@ -23,6 +23,9 @@ const roots = new Set(['html', 'body', ':host']);
 function isRootSelector(selector) {
   return roots.has(selector);
 }
+function isBeforeOrAfter(ruleSelector) {
+  return ruleSelector.includes('::before') || ruleSelector.includes('::after');
+}
 function isPseudoElementSelector(ruleSelector) {
   return ruleSelector.includes('::');
 }
@@ -42,7 +45,6 @@ const isolateInsideOfContainer = (containerSelectors, options) => {
   const selectorsArray = [containerSelectors].flat();
   const whereDirect = `:where(${selectorsArray.join(',')})`;
   const whereWithSubs = `:where(${selectorsArray.map(s => `${s},${s} *`).join(',')})`;
-  const prependCustomSelectorWithMinimalSpecificity = ruleSelector => selectorsArray.map(s => `:where(${s}) ${ruleSelector}`).join(',');
   return ({
     ruleSelector
   }) => {
@@ -55,10 +57,13 @@ const isolateInsideOfContainer = (containerSelectors, options) => {
         return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
       }
       return selectorsArray.map(s => `${s}${whereNotExcept}`).join(',');
+    } else if (isBeforeOrAfter(ruleSelector)) {
+      return `${whereWithSubs}${whereNotExcept}${ruleSelector}`;
     } else if (isPseudoElementSelector(ruleSelector)) {
-      return prependCustomSelectorWithMinimalSpecificity(ruleSelector);
+      return `${whereWithSubs}${whereNotExcept} ${ruleSelector}`;
+    } else {
+      return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
     }
-    return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
   };
 };
 /**
@@ -74,7 +79,8 @@ const isolateOutsideOfContainer = (containerSelectors, options) => {
   const whereNotContainerSelector = `:where(:not(${[containerSelectors].flat().map(s => `${s},${s} *`).join(',')}))`;
   const insideOfContainerLogic = typeof (options == null ? void 0 : options.plus) === 'string' && options.plus ? isolateInsideOfContainer(options.plus) : null;
   return ({
-    ruleSelector
+    ruleSelector,
+    ...rest
   }) => {
     const ignoreOrRemove = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
     if (ignoreOrRemove != null) {
@@ -83,8 +89,9 @@ const isolateOutsideOfContainer = (containerSelectors, options) => {
     if (isRootSelector(ruleSelector)) {
       return ruleSelector;
     }
-    return [`${ruleSelector}${whereNotContainerSelector}`, insideOfContainerLogic == null ? void 0 : insideOfContainerLogic({
-      ruleSelector
+    return [isBeforeOrAfter(ruleSelector) ? `${whereNotContainerSelector}${ruleSelector}` : isPseudoElementSelector(ruleSelector) ? `${whereNotContainerSelector} ${ruleSelector}` : `${ruleSelector}${whereNotContainerSelector}`, insideOfContainerLogic == null ? void 0 : insideOfContainerLogic({
+      ruleSelector,
+      ...rest
     })].filter(Boolean).join(',');
   };
 };

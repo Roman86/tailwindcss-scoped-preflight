@@ -113,10 +113,10 @@
 
 *:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
 *:where(.tw,.tw *),
-::before:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::before,
-::after:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::after {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *))::before,
+:where(.tw,.tw *)::before,
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *))::after,
+:where(.tw,.tw *)::after {
   box-sizing: border-box;
   /* 1 */
   border-width: 0;
@@ -127,10 +127,10 @@
   /* 2 */
 }
 
-::before:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::before,
-::after:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::after {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *))::before,
+:where(.tw,.tw *)::before,
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *))::after,
+:where(.tw,.tw *)::after {
   --tw-content: '';
 }
 
@@ -419,10 +419,10 @@ progress:where(.tw,.tw *) {
 Correct the cursor style of increment and decrement buttons in Safari.
 */
 
-::-webkit-inner-spin-button:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::-webkit-inner-spin-button,
-::-webkit-outer-spin-button:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::-webkit-outer-spin-button {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) ::-webkit-inner-spin-button,
+:where(.tw,.tw *) ::-webkit-inner-spin-button,
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) ::-webkit-outer-spin-button,
+:where(.tw,.tw *) ::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -443,8 +443,8 @@ Correct the cursor style of increment and decrement buttons in Safari.
 Remove the inner padding in Chrome and Safari on macOS.
 */
 
-::-webkit-search-decoration:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::-webkit-search-decoration {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) ::-webkit-search-decoration,
+:where(.tw,.tw *) ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -453,8 +453,8 @@ Remove the inner padding in Chrome and Safari on macOS.
 2. Change font properties to `inherit` in Safari.
 */
 
-::-webkit-file-upload-button:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) ::-webkit-file-upload-button {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) ::-webkit-file-upload-button,
+:where(.tw,.tw *) ::-webkit-file-upload-button {
   -webkit-appearance: button;
   /* 1 */
   font: inherit;
@@ -548,17 +548,17 @@ textarea:where(.tw,.tw *) {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-input::-moz-placeholder:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)), :where(.tw) input::-moz-placeholder, textarea::-moz-placeholder:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)), :where(.tw) textarea::-moz-placeholder {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) input::-moz-placeholder, :where(.tw,.tw *) input::-moz-placeholder, :where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) textarea::-moz-placeholder, :where(.tw,.tw *) textarea::-moz-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
   /* 2 */
 }
 
-input::placeholder:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) input::placeholder,
-textarea::placeholder:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)),
-:where(.tw) textarea::placeholder {
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) input::placeholder,
+:where(.tw,.tw *) input::placeholder,
+:where(:not(.no-tw,.no-tw *,.no-tw-2,.no-tw-2 *)) textarea::placeholder,
+:where(.tw,.tw *) textarea::placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;

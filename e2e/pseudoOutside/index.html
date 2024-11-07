@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Outside, 2 selectors</title>
+    <link rel="stylesheet" href="stylesout.css" />
+  </head>
+  <body>
+    <div class="no-tw" style="background-color: rgba(50, 0, 0, 0.1)">
+      <div data-no-height class="after:block after:size-12 after:bg-blue-500">
+        <!-- should be empty div-->
+      </div>
+      <input type="number" placeholder="age" class="placeholder-amber-400" />
+      <input type="file" title="file untouched" />
+      <progress class="progress-amber-400" max="100" value="50"></progress>
+      <button>Btw Native</button>
+    </div>
+    should be a blue square down below:
+    <div
+      data-has-height
+      class="after:block after:border after:border-black after:size-12 after:bg-blue-500"
+    >
+    </div>
+    <input type="number" placeholder="age" class="placeholder-amber-400"/>
+    <div>
+      <input type="file" placeholder="file preflight" />
+      <progress class="progress-amber-400" max="100" value="50"></progress>
+      <button data-tw>Btn TW</button>
+    </div>
+  </body>
+</html>
