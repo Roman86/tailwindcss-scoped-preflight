@@ -8,8 +8,9 @@ test('Outside of container', async ({ page }, testInfo) => {
       url: './outside/',
       rules: {
         body: hasNoMargin,
+        'body>button': transparentBg,
         'p.no-tw': hasMargin,
-        'p.no-tw+p': hasNoMargin,
+        'body>p:not(.no-tw)': hasNoMargin,
         '.no-tw button.tw': transparentBg,
         '.no-tw .tw+button': coloredBg,
       },

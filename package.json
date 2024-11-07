@@ -21,7 +21,7 @@
     "build/watch": "microbundle --target node -f modern,esm,cjs -w",
     "test": "npm run test/build && playwright test",
     "test/build": "npx tsx e2e/build-e2e.ts",
-    "test/watch": "npx tsx e2e/build-e2e.ts --watch",
+    "test/watch": "npx tsx watch --include \"./dist/*\" --include \"./e2e/**/*.html\" e2e/build-e2e.ts",
     "test/serve": "http-server ./e2e -p 8080 -c-1",
     "test/ui": "playwright test --ui"
   },

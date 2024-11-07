@@ -1,6 +1,4 @@
-*,
-::before,
-::after {
+*, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
   --tw-translate-x: 0;
@@ -113,9 +111,9 @@
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
 
-#somecontainer *,
-#somecontainer ::before,
-#somecontainer ::after {
+*:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+:where(#somecontainer) ::before,
+:where(#somecontainer) ::after {
   box-sizing: border-box;
   /* 1 */
   border-width: 0;
@@ -126,8 +124,8 @@
   /* 2 */
 }
 
-#somecontainer ::before,
-#somecontainer ::after {
+:where(#somecontainer) ::before,
+:where(#somecontainer) ::after {
   --tw-content: '';
 }
 
@@ -141,7 +139,7 @@
 7. Disable tap highlights on iOS
 */
 
-#somecontainer {
+#somecontainer:where(:not(.no-tw,.no-tw *)) {
   line-height: 1.5;
   /* 1 */
   -webkit-text-size-adjust: 100%;
@@ -149,10 +147,9 @@
   -moz-tab-size: 4;
   /* 3 */
   -o-tab-size: 4;
-  tab-size: 4;
+     tab-size: 4;
   /* 3 */
-  font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* 4 */
   font-feature-settings: normal;
   /* 5 */
@@ -167,7 +164,7 @@
 2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
 */
 
-#somecontainer {
+#somecontainer:where(:not(.no-tw,.no-tw *)) {
   margin: 0;
   /* 1 */
   line-height: inherit;
@@ -180,7 +177,7 @@
 3. Ensure horizontal rules are visible by default.
 */
 
-hr:where(#somecontainer, #somecontainer *) {
+hr:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   height: 0;
   /* 1 */
   color: inherit;
@@ -193,21 +190,21 @@ hr:where(#somecontainer, #somecontainer *) {
 Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
-abbr:where([title]):where(#somecontainer, #somecontainer *) {
+abbr:where([title]):where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   -webkit-text-decoration: underline dotted;
-  text-decoration: underline dotted;
+          text-decoration: underline dotted;
 }
 
 /*
 Remove the default font size and weight for headings.
 */
 
-h1:where(#somecontainer, #somecontainer *),
-h2:where(#somecontainer, #somecontainer *),
-h3:where(#somecontainer, #somecontainer *),
-h4:where(#somecontainer, #somecontainer *),
-h5:where(#somecontainer, #somecontainer *),
-h6:where(#somecontainer, #somecontainer *) {
+h1:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h2:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h3:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h4:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h5:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h6:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -216,7 +213,7 @@ h6:where(#somecontainer, #somecontainer *) {
 Reset links to optimize for opt-in styling instead of opt-out.
 */
 
-a:where(#somecontainer, #somecontainer *) {
+a:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   color: inherit;
   text-decoration: inherit;
 }
@@ -225,8 +222,8 @@ a:where(#somecontainer, #somecontainer *) {
 Add the correct font weight in Edge and Safari.
 */
 
-b:where(#somecontainer, #somecontainer *),
-strong:where(#somecontainer, #somecontainer *) {
+b:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+strong:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   font-weight: bolder;
 }
 
@@ -237,12 +234,11 @@ strong:where(#somecontainer, #somecontainer *) {
 4. Correct the odd `em` font sizing in all browsers.
 */
 
-code:where(#somecontainer, #somecontainer *),
-kbd:where(#somecontainer, #somecontainer *),
-samp:where(#somecontainer, #somecontainer *),
-pre:where(#somecontainer, #somecontainer *) {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+code:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+kbd:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+samp:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+pre:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   /* 1 */
   font-feature-settings: normal;
   /* 2 */
@@ -256,7 +252,7 @@ pre:where(#somecontainer, #somecontainer *) {
 Add the correct font size in all browsers.
 */
 
-small:where(#somecontainer, #somecontainer *) {
+small:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   font-size: 80%;
 }
 
@@ -264,19 +260,19 @@ small:where(#somecontainer, #somecontainer *) {
 Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
 
-sub:where(#somecontainer, #somecontainer *),
-sup:where(#somecontainer, #somecontainer *) {
+sub:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+sup:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-sub:where(#somecontainer, #somecontainer *) {
+sub:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   bottom: -0.25em;
 }
 
-sup:where(#somecontainer, #somecontainer *) {
+sup:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   top: -0.5em;
 }
 
@@ -286,7 +282,7 @@ sup:where(#somecontainer, #somecontainer *) {
 3. Remove gaps between table borders by default.
 */
 
-table:where(#somecontainer, #somecontainer *) {
+table:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   text-indent: 0;
   /* 1 */
   border-color: inherit;
@@ -301,11 +297,11 @@ table:where(#somecontainer, #somecontainer *) {
 3. Remove default padding in all browsers.
 */
 
-button:where(#somecontainer, #somecontainer *),
-input:where(#somecontainer, #somecontainer *),
-optgroup:where(#somecontainer, #somecontainer *),
-select:where(#somecontainer, #somecontainer *),
-textarea:where(#somecontainer, #somecontainer *) {
+button:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+input:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+optgroup:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+select:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+textarea:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   font-family: inherit;
   /* 1 */
   font-feature-settings: inherit;
@@ -332,8 +328,8 @@ textarea:where(#somecontainer, #somecontainer *) {
 Remove the inheritance of text transform in Edge and Firefox.
 */
 
-button:where(#somecontainer, #somecontainer *),
-select:where(#somecontainer, #somecontainer *) {
+button:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+select:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   text-transform: none;
 }
 
@@ -342,10 +338,10 @@ select:where(#somecontainer, #somecontainer *) {
 2. Remove default button styles.
 */
 
-button:where(#somecontainer, #somecontainer *),
-input:where([type='button']):where(#somecontainer, #somecontainer *),
-input:where([type='reset']):where(#somecontainer, #somecontainer *),
-input:where([type='submit']):where(#somecontainer, #somecontainer *) {
+button:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+input:where([type='button']):where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+input:where([type='reset']):where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+input:where([type='submit']):where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   -webkit-appearance: button;
   /* 1 */
   background-color: transparent;
@@ -358,7 +354,7 @@ input:where([type='submit']):where(#somecontainer, #somecontainer *) {
 Use the modern Firefox focus style for all focusable elements.
 */
 
-:-moz-focusring:where(#somecontainer, #somecontainer *) {
+:-moz-focusring:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   outline: auto;
 }
 
@@ -366,7 +362,7 @@ Use the modern Firefox focus style for all focusable elements.
 Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
 */
 
-:-moz-ui-invalid:where(#somecontainer, #somecontainer *) {
+:-moz-ui-invalid:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   box-shadow: none;
 }
 
@@ -374,7 +370,7 @@ Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/
 Add the correct vertical alignment in Chrome and Firefox.
 */
 
-progress:where(#somecontainer, #somecontainer *) {
+progress:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   vertical-align: baseline;
 }
 
@@ -382,8 +378,8 @@ progress:where(#somecontainer, #somecontainer *) {
 Correct the cursor style of increment and decrement buttons in Safari.
 */
 
-#somecontainer ::-webkit-inner-spin-button,
-#somecontainer ::-webkit-outer-spin-button {
+:where(#somecontainer) ::-webkit-inner-spin-button,
+:where(#somecontainer) ::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -392,7 +388,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 2. Correct the outline style in Safari.
 */
 
-[type='search']:where(#somecontainer, #somecontainer *) {
+[type='search']:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   -webkit-appearance: textfield;
   /* 1 */
   outline-offset: -2px;
@@ -403,7 +399,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 Remove the inner padding in Chrome and Safari on macOS.
 */
 
-#somecontainer ::-webkit-search-decoration {
+:where(#somecontainer) ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -412,7 +408,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 2. Change font properties to `inherit` in Safari.
 */
 
-#somecontainer ::-webkit-file-upload-button {
+:where(#somecontainer) ::-webkit-file-upload-button {
   -webkit-appearance: button;
   /* 1 */
   font: inherit;
@@ -423,7 +419,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 Add the correct display in Chrome and Safari.
 */
 
-summary:where(#somecontainer, #somecontainer *) {
+summary:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   display: list-item;
 }
 
@@ -431,34 +427,34 @@ summary:where(#somecontainer, #somecontainer *) {
 Removes the default spacing and border for appropriate elements.
 */
 
-blockquote:where(#somecontainer, #somecontainer *),
-dl:where(#somecontainer, #somecontainer *),
-dd:where(#somecontainer, #somecontainer *),
-h1:where(#somecontainer, #somecontainer *),
-h2:where(#somecontainer, #somecontainer *),
-h3:where(#somecontainer, #somecontainer *),
-h4:where(#somecontainer, #somecontainer *),
-h5:where(#somecontainer, #somecontainer *),
-h6:where(#somecontainer, #somecontainer *),
-hr:where(#somecontainer, #somecontainer *),
-figure:where(#somecontainer, #somecontainer *),
-p:where(#somecontainer, #somecontainer *),
-pre:where(#somecontainer, #somecontainer *) {
+blockquote:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+dl:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+dd:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h1:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h2:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h3:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h4:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h5:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+h6:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+hr:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+figure:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+p:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+pre:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   margin: 0;
 }
 
-fieldset:where(#somecontainer, #somecontainer *) {
+fieldset:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   margin: 0;
   padding: 0;
 }
 
-legend:where(#somecontainer, #somecontainer *) {
+legend:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   padding: 0;
 }
 
-ol:where(#somecontainer, #somecontainer *),
-ul:where(#somecontainer, #somecontainer *),
-menu:where(#somecontainer, #somecontainer *) {
+ol:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+ul:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+menu:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -468,7 +464,7 @@ menu:where(#somecontainer, #somecontainer *) {
 Reset default styling for dialogs.
 */
 
-dialog:where(#somecontainer, #somecontainer *) {
+dialog:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   padding: 0;
 }
 
@@ -476,7 +472,7 @@ dialog:where(#somecontainer, #somecontainer *) {
 Prevent resizing textareas horizontally by default.
 */
 
-textarea:where(#somecontainer, #somecontainer *) {
+textarea:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   resize: vertical;
 }
 
@@ -485,16 +481,15 @@ textarea:where(#somecontainer, #somecontainer *) {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-#somecontainer input::-moz-placeholder,
-#somecontainer textarea::-moz-placeholder {
+:where(#somecontainer) input::-moz-placeholder, :where(#somecontainer) textarea::-moz-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
   /* 2 */
 }
 
-#somecontainer input::placeholder,
-#somecontainer textarea::placeholder {
+:where(#somecontainer) input::placeholder,
+:where(#somecontainer) textarea::placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
@@ -505,8 +500,8 @@ textarea:where(#somecontainer, #somecontainer *) {
 Set the default cursor for buttons.
 */
 
-button:where(#somecontainer, #somecontainer *),
-[role='button']:where(#somecontainer, #somecontainer *) {
+button:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+[role="button"]:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   cursor: pointer;
 }
 
@@ -514,7 +509,7 @@ button:where(#somecontainer, #somecontainer *),
 Make sure disabled buttons don't get the pointer cursor.
 */
 
-:disabled:where(#somecontainer, #somecontainer *) {
+:disabled:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   cursor: default;
 }
 
@@ -524,14 +519,14 @@ Make sure disabled buttons don't get the pointer cursor.
    This can trigger a poorly considered lint error in some tools but is included by design.
 */
 
-img:where(#somecontainer, #somecontainer *),
-svg:where(#somecontainer, #somecontainer *),
-video:where(#somecontainer, #somecontainer *),
-canvas:where(#somecontainer, #somecontainer *),
-audio:where(#somecontainer, #somecontainer *),
-iframe:where(#somecontainer, #somecontainer *),
-embed:where(#somecontainer, #somecontainer *),
-object:where(#somecontainer, #somecontainer *) {
+img:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+svg:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+video:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+canvas:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+audio:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+iframe:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+embed:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+object:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   display: block;
   /* 1 */
   vertical-align: middle;
@@ -542,15 +537,15 @@ object:where(#somecontainer, #somecontainer *) {
 Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
 */
 
-img:where(#somecontainer, #somecontainer *),
-video:where(#somecontainer, #somecontainer *) {
+img:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)),
+video:where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   max-width: 100%;
   height: auto;
 }
 
 /* Make elements with the HTML hidden attribute stay hidden by default */
 
-[hidden]:where(:not([hidden='until-found'])):where(#somecontainer, #somecontainer *) {
+[hidden]:where(:not([hidden="until-found"])):where(#somecontainer,#somecontainer *):where(:not(.no-tw,.no-tw *)) {
   display: none;
 }
 
@@ -745,9 +740,7 @@ video:where(#somecontainer, #somecontainer *) {
 }
 
 .transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate))
-    skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
-    scaleY(var(--tw-scale-y));
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .resize {
@@ -908,45 +901,29 @@ video:where(#somecontainer, #somecontainer *) {
   text-decoration-line: underline;
 }
 
+.placeholder-amber-400::-moz-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(251 191 36 / var(--tw-placeholder-opacity));
+}
+
+.placeholder-amber-400::placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(251 191 36 / var(--tw-placeholder-opacity));
+}
+
 .blur {
   --tw-blur: blur(8px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale)
-    var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .filter {
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale)
-    var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .transition {
-  transition-property:
-    color,
-    background-color,
-    border-color,
-    text-decoration-color,
-    fill,
-    stroke,
-    opacity,
-    box-shadow,
-    transform,
-    filter,
-    -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
-    opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property:
-    color,
-    background-color,
-    border-color,
-    text-decoration-color,
-    fill,
-    stroke,
-    opacity,
-    box-shadow,
-    transform,
-    filter,
-    backdrop-filter,
-    -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -960,6 +937,17 @@ video:where(#somecontainer, #somecontainer *) {
   content: var(--tw-content);
   width: 3rem;
   height: 3rem;
+}
+
+.after\:border::after {
+  content: var(--tw-content);
+  border-width: 1px;
+}
+
+.after\:border-black::after {
+  content: var(--tw-content);
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 
 .after\:bg-blue-500::after {

@@ -60,8 +60,8 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
   const whereDirect = `:where(${selectorsArray.join(',')})`;
   const whereWithSubs = `:where(${selectorsArray.map((s) => `${s},${s} *`).join(',')})`;
 
-  const prependWithCustomSelectors = (ruleSelector: string) =>
-    selectorsArray.map((s) => `${s} ${ruleSelector}`).join(',');
+  const prependCustomSelectorWithMinimalSpecificity = (ruleSelector: string) =>
+    selectorsArray.map((s) => `:where(${s}) ${ruleSelector}`).join(',');
 
   return ({ ruleSelector }) => {
     const handled = optionsHandlerForIgnoreAndRemove(ruleSelector, options);
@@ -74,8 +74,8 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
         return `${ruleSelector}${whereNotExcept} ${whereDirect}`;
       }
       return selectorsArray.map((s) => `${s}${whereNotExcept}`).join(',');
-    } else if (ruleSelector === '*' || isPseudoElementSelector(ruleSelector)) {
-      return prependWithCustomSelectors(ruleSelector);
+    } else if (isPseudoElementSelector(ruleSelector)) {
+      return prependCustomSelectorWithMinimalSpecificity(ruleSelector);
     }
     return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
   };

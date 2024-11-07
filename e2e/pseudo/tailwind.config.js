@@ -4,7 +4,9 @@ module.exports = {
   content: ['**/*.html'],
   plugins: [
     scopedPreflightStyles({
-      isolationStrategy: isolateInsideOfContainer('#somecontainer'),
+      isolationStrategy: isolateInsideOfContainer('#somecontainer', {
+        except: '.no-tw',
+      }),
     }),
   ],
 };

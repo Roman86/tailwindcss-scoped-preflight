@@ -9,12 +9,31 @@
   </head>
   <body>
     <div class="no-tw">
-      <div class="after:block after:size-12 after:bg-blue-500">
+      <div data-no-height class="after:block after:size-12 after:bg-blue-500">
         <!-- should be empty div-->
       </div>
+      <input type="number" placeholder="age" class="placeholder-amber-400" />
+      <input type="file" title="file untouched" />
+      <progress class="progress-amber-400" max="100" value="50"></progress>
     </div>
     <div id="somecontainer">
-      <div class="after:block after:size-12 after:bg-blue-500">should have blue square after</div>
+      <div data-has-height class="after:block after:border after:border-black after:size-12 after:bg-blue-500">
+        should have blue square after
+      </div>
+      <input type="number" placeholder="age" class="placeholder-amber-400" />
+      <div>
+        <input type="file" placeholder="file preflight" />
+        <progress class="progress-amber-400" max="100" value="50"></progress>
+        <button>Btw TW</button>
+      </div>
+      <div class="no-tw">
+        <div class="after:block after:border after:border-black after:size-12 after:bg-blue-500">
+          should NOT have blue square after
+        </div>
+        <input type="file" placeholder="file untouched" />
+        <progress class="progress-amber-400" max="100" value="50"></progress>
+          <button>Btw Native</button>
+      </div>
     </div>
   </body>
 </html>

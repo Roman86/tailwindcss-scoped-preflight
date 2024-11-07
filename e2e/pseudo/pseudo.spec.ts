@@ -8,8 +8,8 @@ test('Pseudo-elements', async ({ page }, testInfo) => {
       url: './pseudo/',
       rules: {
         body: hasMargin,
-        '.no-tw div': hasNoHeight,
-        '#somecontainer div': hasHeight,
+        '.no-tw div[data-no-height]': hasNoHeight,
+        '#somecontainer div[data-has-height]': hasHeight,
       },
     },
     page,
