@@ -1,5 +1,5 @@
 import { promisifyExec } from './promisifyExec';
-import { readdirSync, statSync } from 'fs';
+import { readdirSync, statSync, existsSync } from 'fs';
 
 const tailwindConfigFileName = 'tailwind.config.js';
 
@@ -16,9 +16,13 @@ const testDirs = readdirSync(currentDir, {
 );
 
 await Promise.all(
-  testDirs.map((dirName) =>
-    promisifyExec(
-      `tailwindcss -c ${currentDir}/${dirName}/${tailwindConfigFileName} -i ${currentDir}/stylesin.css -o ${currentDir}/${dirName}/stylesout.css ${watch ? '-w' : ''}`,
-    ),
-  ),
+  testDirs.map((dirName) => {
+    const stylesInOverride = `${currentDir}/${dirName}/stylesin.css`;
+    const stylesInPath = existsSync(stylesInOverride)
+      ? stylesInOverride
+      : `${currentDir}/stylesin.css`;
+    return promisifyExec(
+      `tailwindcss -c ${currentDir}/${dirName}/${tailwindConfigFileName} -i ${stylesInPath} -o ${currentDir}/${dirName}/stylesout.css ${watch ? '-w' : ''}`,
+    );
+  }),
 );
