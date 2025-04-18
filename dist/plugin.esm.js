@@ -1,7 +1,6 @@
 import TailwindPlugin from 'tailwindcss/plugin.js';
 import postcss from 'postcss';
 import { readFileSync } from 'fs';
-import { createRequire } from 'module';
 
 const optionsHandlerForIgnoreAndRemove = (selector, {
   ignore,
@@ -113,7 +112,6 @@ const isolateForComponents = (componentSelectors, options) => {
   };
 };
 
-const req = createRequire(import.meta.url);
 const {
   withOptions
 } = TailwindPlugin;
@@ -135,7 +133,7 @@ const scopedPreflightStyles = withOptions(({
   addBase,
   corePlugins
 }) => {
-  const baseCssPath = req.resolve('tailwindcss/lib/css/preflight.css');
+  const baseCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
   const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
   if (typeof isolationStrategy !== 'function') {
     throw new Error("TailwindCssScopedPreflightPlugin: isolationStrategy option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, isolateForComponents } from 'tailwindcss-scoped-preflight-plugin')");

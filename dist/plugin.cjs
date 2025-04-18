@@ -1,7 +1,6 @@
 var TailwindPlugin = require('tailwindcss/plugin.js');
 var postcss = require('postcss');
 var fs = require('fs');
-var module$1 = require('module');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -118,7 +117,6 @@ const isolateForComponents = (componentSelectors, options) => {
   };
 };
 
-const req = module$1.createRequire((typeof document === 'undefined' ? new (require('u' + 'rl').URL)('file:' + __filename).href : (document.currentScript && document.currentScript.tagName.toUpperCase() === 'SCRIPT' && document.currentScript.src || new URL('plugin.cjs', document.baseURI).href)));
 const {
   withOptions
 } = TailwindPlugin__default["default"];
@@ -140,7 +138,7 @@ const scopedPreflightStyles = withOptions(({
   addBase,
   corePlugins
 }) => {
-  const baseCssPath = req.resolve('tailwindcss/lib/css/preflight.css');
+  const baseCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
   const baseCssStyles = postcss__default["default"].parse(fs.readFileSync(baseCssPath, 'utf8'));
   if (typeof isolationStrategy !== 'function') {
     throw new Error("TailwindCssScopedPreflightPlugin: isolationStrategy option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, isolateForComponents } from 'tailwindcss-scoped-preflight-plugin')");
