@@ -33,6 +33,8 @@ Starting from version 3 it provides a powerful configuration to (optionally):
 [<img src="src/bmc_qr.png" alt="Buy Me A Coffee" width="120" height="120">](https://www.buymeacoffee.com/romanjs)
 <br/>Support/contact [tiny website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
 
+[Discord server](https://discord.gg/CXHadKnaGk) for any discussions/questions/ideas/proposals - feel free to join.
+
 ## Strategies overview
 
 For ease of use, there are 2 pre-bundled isolation strategies available (as named exports) that cover 99% cases:
