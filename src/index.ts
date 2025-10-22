@@ -2,6 +2,10 @@ import TailwindPlugin from 'tailwindcss/plugin.js';
 import postcss from 'postcss';
 import { type CSSRuleObject } from 'tailwindcss/types/config.js';
 import { readFileSync } from 'fs';
+import { createRequire } from 'module';
+
+// if you see TS1470 - we actually just made an adapter here
+const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
 
 const { withOptions } = TailwindPlugin;
 
@@ -37,7 +41,7 @@ interface PluginOptions {
 export const scopedPreflightStyles = withOptions<PluginOptions>(
   ({ isolationStrategy, propsFilter, modifyPreflightStyles }) =>
     ({ addBase, corePlugins }) => {
-      const baseCssPath = require.resolve('tailwindcss/lib/css/preflight.css');
+      const baseCssPath = req.resolve('tailwindcss/lib/css/preflight.css');
       const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
 
       if (typeof isolationStrategy !== 'function') {
