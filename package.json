@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Roman86/tailwindcss-scoped-preflight.git"
+    "url": "git+https://github.com/Roman86/tailwindcss-scoped-preflight.git"
   },
   "keywords": [
     "tailwind",
