@@ -578,6 +578,14 @@ video:where(.comp,.comp *) {
   margin: 0.25rem;
 }
 
+.m-14 {
+  margin: 3.5rem;
+}
+
+.m-16 {
+  margin: 4rem;
+}
+
 .m-2 {
   margin: 0.5rem;
 }
@@ -592,6 +600,10 @@ video:where(.comp,.comp *) {
 
 .m-5 {
   margin: 1.25rem;
+}
+
+.m-8 {
+  margin: 2rem;
 }
 
 .mx-1 {
@@ -748,6 +760,10 @@ video:where(.comp,.comp *) {
   resize: both;
 }
 
+.border {
+  border-width: 1px;
+}
+
 .p-1 {
   padding: 0.25rem;
 }
@@ -898,8 +914,20 @@ video:where(.comp,.comp *) {
   padding-top: 1.25rem;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .underline {
   text-decoration-line: underline;
+}
+
+.overline {
+  text-decoration-line: overline;
+}
+
+.line-through {
+  text-decoration-line: line-through;
 }
 
 .placeholder-amber-400::-moz-placeholder {
