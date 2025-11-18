@@ -61,5 +61,9 @@
   "peerDependencies": {
     "postcss": "^8",
     "tailwindcss": "^3"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.1",
+    "glob": "^11.1.0"
   }
 }
