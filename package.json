@@ -16,7 +16,6 @@
     "dist"
   ],
   "scripts": {
-    "prepublishOnly": "npm run build && npm run test",
     "build": "rm -rf dist && microbundle --target node -f modern,esm,cjs",
     "build/watch": "microbundle --target node -f modern,esm,cjs -w",
     "test": "npm run test/build && playwright test",
