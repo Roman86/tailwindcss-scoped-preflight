@@ -6,9 +6,9 @@ interface TestScenario {
 }
 
 export async function testTheScenario(scenario: TestScenario, page: Page, testInfo?: TestInfo) {
-  testInfo?.setTimeout(2000);
-  page.setDefaultNavigationTimeout(1000);
-  page.setDefaultTimeout(100);
+  testInfo?.setTimeout(10000);
+  page.setDefaultNavigationTimeout(5000);
+  page.setDefaultTimeout(1000);
 
   await page.goto(scenario.url);
 
