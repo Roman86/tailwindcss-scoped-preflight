@@ -1,4 +1,4 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 
 export async function hasMargin(locator: Locator) {
   return expect(locator).toHaveCSS('margin', /^[^0]+/);

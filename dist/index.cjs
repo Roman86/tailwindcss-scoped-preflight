@@ -36,10 +36,10 @@ __export(index_exports, {
   scopedPreflightStyles: () => scopedPreflightStyles
 });
 module.exports = __toCommonJS(index_exports);
-var import_plugin = __toESM(require("tailwindcss/plugin.js"), 1);
+var import_node_fs = require("fs");
+var import_node_module = require("module");
 var import_postcss = __toESM(require("postcss"), 1);
-var import_fs = require("fs");
-var import_module = require("module");
+var import_plugin = __toESM(require("tailwindcss/plugin.js"), 1);
 
 // src/strategies.ts
 var optionsHandlerForIgnoreAndRemove = (selector, { ignore, remove } = {}) => {
@@ -51,11 +51,7 @@ var optionsHandlerForIgnoreAndRemove = (selector, { ignore, remove } = {}) => {
   }
   return null;
 };
-var roots = /* @__PURE__ */ new Set([
-  "html",
-  "body",
-  ":host"
-]);
+var roots = /* @__PURE__ */ new Set(["html", "body", ":host"]);
 function isRootSelector(selector) {
   return roots.has(selector);
 }
@@ -115,12 +111,12 @@ var isolateForComponents = (componentSelectors, options) => {
 
 // src/index.ts
 var import_meta = {};
-var req = typeof require !== "undefined" ? require : (0, import_module.createRequire)(import_meta.url);
+var req = typeof require !== "undefined" ? require : (0, import_node_module.createRequire)(import_meta.url);
 var { withOptions } = import_plugin.default;
 var scopedPreflightStyles = withOptions(
   ({ isolationStrategy, propsFilter, modifyPreflightStyles }) => ({ addBase, corePlugins }) => {
     const baseCssPath = req.resolve("tailwindcss/lib/css/preflight.css");
-    const baseCssStyles = import_postcss.default.parse((0, import_fs.readFileSync)(baseCssPath, "utf8"));
+    const baseCssStyles = import_postcss.default.parse((0, import_node_fs.readFileSync)(baseCssPath, "utf8"));
     if (typeof isolationStrategy !== "function") {
       throw new Error(
         "TailwindCssScopedPreflightPlugin: isolationStrategy option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, isolateForComponents } from 'tailwindcss-scoped-preflight-plugin')"

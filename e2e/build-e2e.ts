@@ -1,5 +1,5 @@
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { promisifyExec } from './promisifyExec';
-import { readdirSync, statSync, existsSync } from 'fs';
 
 const tailwindConfigFileName = 'tailwind.config.js';
 

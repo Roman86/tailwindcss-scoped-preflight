@@ -1,4 +1,4 @@
-import { type CSSRuleSelectorTransformer } from './index.js';
+import type { CSSRuleSelectorTransformer } from './index.js';
 
 interface Options {
   ignore?: string[];
@@ -23,11 +23,7 @@ const optionsHandlerForIgnoreAndRemove = (
   return null;
 };
 
-const roots = new Set([
-  'html',
-  'body',
-  ':host',
-]);
+const roots = new Set(['html', 'body', ':host']);
 function isRootSelector(selector: string) {
   return roots.has(selector);
 }

@@ -1,4 +1,4 @@
-import { Locator, Page, TestInfo } from '@playwright/test';
+import type { Locator, Page, TestInfo } from '@playwright/test';
 
 interface TestScenario {
   url: string;
@@ -12,10 +12,7 @@ export async function testTheScenario(scenario: TestScenario, page: Page, testIn
 
   await page.goto(scenario.url);
 
-  for (const [
-    selector,
-    validator,
-  ] of Object.entries(scenario.rules)) {
+  for (const [selector, validator] of Object.entries(scenario.rules)) {
     await validator(page.locator(selector));
   }
 }

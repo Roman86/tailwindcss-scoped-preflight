@@ -6,10 +6,10 @@ var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require
 });
 
 // src/index.ts
-import TailwindPlugin from "tailwindcss/plugin.js";
-import postcss from "postcss";
 import { readFileSync } from "fs";
 import { createRequire } from "module";
+import postcss from "postcss";
+import TailwindPlugin from "tailwindcss/plugin.js";
 
 // src/strategies.ts
 var optionsHandlerForIgnoreAndRemove = (selector, { ignore, remove } = {}) => {
@@ -21,11 +21,7 @@ var optionsHandlerForIgnoreAndRemove = (selector, { ignore, remove } = {}) => {
   }
   return null;
 };
-var roots = /* @__PURE__ */ new Set([
-  "html",
-  "body",
-  ":host"
-]);
+var roots = /* @__PURE__ */ new Set(["html", "body", ":host"]);
 function isRootSelector(selector) {
   return roots.has(selector);
 }

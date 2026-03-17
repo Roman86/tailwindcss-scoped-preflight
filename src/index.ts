@@ -1,8 +1,8 @@
-import TailwindPlugin from 'tailwindcss/plugin.js';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import postcss from 'postcss';
-import { type CSSRuleObject } from 'tailwindcss/types/config.js';
-import { readFileSync } from 'fs';
-import { createRequire } from 'module';
+import TailwindPlugin from 'tailwindcss/plugin.js';
+import type { CSSRuleObject } from 'tailwindcss/types/config.js';
 
 // if you see TS1470 - we actually just made an adapter here
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
