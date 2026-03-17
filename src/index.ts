@@ -125,4 +125,4 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
   }),
 );
 
-export * from './strategies';
+export * from './strategies.js';

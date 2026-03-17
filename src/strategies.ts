@@ -1,4 +1,4 @@
-import { type CSSRuleSelectorTransformer } from './index';
+import { type CSSRuleSelectorTransformer } from './index.js';
 
 interface Options {
   ignore?: string[];

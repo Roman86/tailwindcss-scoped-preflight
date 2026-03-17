@@ -1,4 +1,4 @@
-import { isolateInsideOfContainer, scopedPreflightStyles } from '../../dist/plugin.esm';
+import { isolateInsideOfContainer, scopedPreflightStyles } from '../../dist/index.js';
 
 module.exports = {
   content: ['**/*.html'],
