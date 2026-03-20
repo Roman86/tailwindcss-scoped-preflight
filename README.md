@@ -13,39 +13,38 @@ To avoid style conflicts (CSS collisions/interference side effects) when using T
 
 ### How
 
-This plugin is limiting the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to the customizable CSS selector.
-So you can control where exactly in DOM to apply these base styles - usually it's your own components (not the 3rd party).
+This plugin limits the scope of [Tailwind's opinionated preflight styles](https://tailwindcss.com/docs/preflight) to a customizable CSS selector.
+So you can control exactly where in the DOM to apply these base styles — usually your own components, not third-party ones.
 
-## Version 3 is here 🎉
+## Version 4 is here 🎉
 
-[Migrate from v2](#from-v2) | [Migrate from v1](#from-v1)
+[Migrate from v3](#migration-guide-v3--v4)
 
-Looking for old version's documentation? [v2](https://www.npmjs.com/package/tailwindcss-scoped-preflight/v/legacy-2) | [v1](https://www.npmjs.com/package/tailwindcss-scoped-preflight/v/legacy-1)
+Looking for the v3 documentation? [v3 README](https://github.com/Roman86/tailwindcss-scoped-preflight/blob/v3.5.8/README.md)
 
-Starting from version 3 it provides a powerful configuration to (optionally):
+Version 4 is built for **TailwindCSS v4** and uses the new CSS-first `@plugin` API — no JavaScript config needed.
 
-- 🤌 precisely control CSS selectors;
-- 💨 flexibly remove any preflight styles;
-- 🔎 or even [modify particular values](#modifying-the-preflight-styles) of the Tailwind preflight styles (if you have some very specific conflicts).
+Key changes from v3:
+
+- Configure via `@plugin` in your CSS file, not `tailwind.config.js`
+- No JS imports required
+- Simpler option syntax using CSS property values
 
 ### ❤️ If you'd like to say thanks, buy me a coffee
 
 [<img src="src/bmc_qr.png" alt="Buy Me A Coffee" width="120" height="120">](https://www.buymeacoffee.com/romanjs)
 <br/>Support/contact [tiny website](https://tailwindcss-scoped-preflight-plugin.vercel.app/)
 
-[Discord server](https://discord.gg/CXHadKnaGk) for any discussions/questions/ideas/proposals - feel free to join.
+[Discord server](https://discord.gg/CXHadKnaGk) for any discussions/questions/ideas/proposals — feel free to join.
 
 ## Strategies overview
 
-For ease of use, there are 2 pre-bundled isolation strategies available (as named exports) that cover 99% cases:
+Two isolation strategies are available, covering 99% of cases:
 
-|                                           Pre-bundled strategy                                            | Description                                                                                                                                                                                                                                                                                                                                                                            |
-| :-------------------------------------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|           `isolateInsideOfContainer`<br/><img src="docs/inside.png" alt="inside" width="220"/>            | Everything is protected from the preflight styles, except specified Tailwind root(s).<br/>Use it when you have all the tailwind-powered stuff **isolated under some root container**.                                                                                                                                                                                                  |
-|          `isolateOutsideOfContainer`<br/><img src="docs/outside.png" alt="outside" width="220"/>          | Protects specific root(s) from the preflight styles - Tailwind is everywhere outside.<br/>Use it when you have Tailwind powered stuff everywhere as usual, but you want to **exclude some part of the DOM** from being affected by the preflight styles.                                                                                                                               |
-| ~~`isolateForComponents`~~ (deprecated)<br/><img src="docs/components.png" alt="components" width="220"/> | It generates the same CSS as `isolateInsideOfContainer` with small difference about root styles - so I just put it as an option of `isolateInsideOfContainer` strategy to simplify the strategy selection while still be able to use both modes if needed. If you use this strategy - migrate to `isolateInsideOfContainer` and set `rootStyles` to `add :where` for the same effect). |
-
-🔨 If none of these strategies work for your case, or something isn't perfect - you can [create your own strategy](#your-owncustom-isolation-strategy).
+|                                    Strategy                                     | Description                                                                                                                                                                             |
+| :-----------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|   `isolationStrategy: inside`<br/><img src="docs/inside.png" alt="inside" width="220"/>   | Everything is protected from preflight styles, except the specified Tailwind root(s).<br/>Use it when all your Tailwind-powered content lives **inside some root container**.           |
+| `isolationStrategy: outside`<br/><img src="docs/outside.png" alt="outside" width="220"/> | Protects specific root(s) from preflight styles — Tailwind is everywhere outside.<br/>Use it when Tailwind is everywhere, but you want to **exclude some part of the DOM** from preflight. |
 
 # Quick Start
 
@@ -55,73 +54,98 @@ For ease of use, there are 2 pre-bundled isolation strategies available (as name
 npm i -D tailwindcss-scoped-preflight
 ```
 
-### 2. Update your Tailwind CSS configuration
+### 2. Replace your Tailwind import
 
-#### 2.1 Case: you want to lock Tailwind preflight styles inside of some root container (or multiple containers), so they couldn't affect the rest of your web page.
+Most projects start with a single import:
 
-Use `isolateInsideOfContainer`:
-
-```javascript
-// tailwind.config.js
-
-import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
-
-/** @type {import("tailwindcss").Config} */
-const config = {
-  // ...
-  plugins: [
-    // ...
-    scopedPreflightStyles({
-      isolationStrategy: isolateInsideOfContainer('.twp', {
-        except: '.no-twp', // optional, to exclude some elements under .twp from being preflighted, like external markup
-      }),
-    }),
-  ],
-};
-
-exports.default = config;
+```css
+@import "tailwindcss";
 ```
 
-|         Option          | Value                         | Description                                                                                                 |
-|:-----------------------:|-------------------------------|-------------------------------------------------------------------------------------------------------------|
-|   `except` (optional)   | CSS selector                  | to exclude some elements under .twp from being preflighted, like external markup                            |
-| `rootStyles` (optional) | `move to container` (default) | moves the root styles to the container styles (by simply replacing the selector)                            |
-|                         | `add :where`                  | adds ` :where` to the root selector so styles are still in roots, but only matching items would be affected |
-|   `remove` (optional)   | array of CSS selectors        | Removes specified (with CSS selectors) preflight styles                                                     |
-|   `ignore` (optional)   | array of CSS selectors        | Keeps these preflight selectors untouched (skipped by the isolation strategy)                               |
+This includes Tailwind's **global preflight** (CSS reset) — which is exactly what this plugin replaces with a scoped version. To avoid having both global and scoped preflight in your CSS, replace the single import with granular ones that **skip preflight**:
 
-#### 2.2 Case: you want Tailwind preflight styles to be everywhere except some root container(s) that may collide.
-
-Use `isolateOutsideOfContainer`:
-
-```javascript
-// tailwind.config.js
-
-import { scopedPreflightStyles, isolateOutsideOfContainer } from 'tailwindcss-scoped-preflight';
-
-/** @type {import("tailwindcss").Config} */
-const config = {
-  // ...
-  plugins: [
-    // ...
-    scopedPreflightStyles({
-      isolationStrategy: isolateOutsideOfContainer('.no-twp', {
-        plus: '.twp', // optional, if you have your Tailwind components under .no-twp, you need them to be preflighted
-      }),
-    }),
-  ],
-};
-
-exports.default = config;
+```css
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
 ```
 
-|       Option        | Value                  | Description                                                                                                                       |
-|:-------------------:|------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-|  `plus` (optional)  | CSS selector           | if you have your Tailwind components under .no-twp, you need them to be preflighted. Specify their root selector with this option |
-| `remove` (optional) | array of CSS selectors | Removes specified (with CSS selectors) preflight styles                                                                           |
-| `ignore` (optional) | array of CSS selectors | Keeps these preflight selectors untouched (skipped by the isolation strategy)                                                     |
+> **Why not `@import "tailwindcss"`?** It bundles preflight that applies to `*`, `html`, `body` globally. With this plugin you want preflight scoped to your selector — having both defeats the purpose.
 
-### 3. Use specified selectors in your DOM
+### 3. Add `@plugin` to your CSS file
+
+#### 3.1 Lock Tailwind preflight inside a container
+
+Use `isolationStrategy: inside` when all your Tailwind-powered content is under a single root element (like `.twp`). Preflight styles will only apply within that container.
+
+```css
+/* input.css */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp;
+}
+```
+
+With an exclusion zone (to protect third-party markup nested under `.twp`):
+
+```css
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp;
+  except: .no-twp;
+}
+```
+
+|          Option           | Value                          | Description                                                                                                  |
+| :-----------------------: | ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+|   `isolationStrategy`     | `inside`                       | Required. Activates the inside-container isolation mode.                                                     |
+|      `selector`           | CSS selector (or comma-list)   | Required. The container(s) where Tailwind content lives. e.g. `.twp` or `.twp, [twp]`                       |
+|   `except` (optional)     | CSS selector                   | Excludes nested elements from preflight. Useful for third-party markup under `.twp`.                         |
+| `rootStyles` (optional)   | `move to container` (default)  | Moves root styles (html/body/:host) to the container selector.                                               |
+|                           | `add :where`                   | Keeps root styles on root selectors but wraps them with `:where` so only matching items are affected.        |
+|   `ignore` (optional)     | Comma-separated CSS selectors  | Keeps these preflight selectors untouched (skipped by the isolation strategy). e.g. `html, :host, *`         |
+|   `remove` (optional)     | Comma-separated CSS selectors  | Removes preflight styles for these selectors entirely. e.g. `body, :before, :after`                          |
+
+#### 3.2 Exclude a container from Tailwind preflight
+
+Use `isolationStrategy: outside` when Tailwind is used everywhere, but you want one section of the page to be unaffected by preflight (e.g. a legacy widget or iframe content).
+
+```css
+/* input.css */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: outside;
+  selector: .no-twp;
+}
+```
+
+With a `plus` selector (to re-enable preflight for Tailwind components nested inside the excluded zone):
+
+```css
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: outside;
+  selector: .no-twp;
+  plus: .twp;
+}
+```
+
+|        Option         | Value                         | Description                                                                                                     |
+| :-------------------: | ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `isolationStrategy`   | `outside`                     | Required. Activates the outside-container isolation mode.                                                        |
+|    `selector`         | CSS selector (or comma-list)  | Required. The container(s) to protect from preflight. e.g. `.no-twp`                                            |
+|  `plus` (optional)    | CSS selector                  | Re-enables preflight for Tailwind components nested inside the excluded zone. e.g. `.twp`                       |
+| `ignore` (optional)   | Comma-separated CSS selectors | Keeps these preflight selectors untouched (skipped by the isolation strategy).                                   |
+| `remove` (optional)   | Comma-separated CSS selectors | Removes preflight styles for these selectors entirely.                                                           |
+
+#### Choosing a good selector
+
+Use a dedicated plain class name (`.twp`, `.no-twp`) or a data attribute (`[data-twp]`) as your container selector. Avoid selectors that contain colons (like Tailwind modifier syntax `.xl:some-class`) — they require CSS escaping (`\.xl\:some-class`) and add unnecessary complexity.
+
+### 4. Use the selector in your DOM
 
 ```tsx
 export function MyApp({ children }: PropsWithChildren) {
@@ -131,204 +155,241 @@ export function MyApp({ children }: PropsWithChildren) {
 
 # Configuration examples
 
-### Using the strategy for multiple selectors
+### Using multiple selectors
 
-```diff
-scopedPreflightStyles({
-  isolationStrategy: isolateInsideOfContainer(
--   '.twp',
-+   [
-+     '.twp',
-+     '[twp]',
-+   ],
-  ),
-})
+```css
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp, [twp];
+}
 ```
 
-> Although all the strategies allow you to specify a number of selectors - it's recommended to use one short selector to avoid CSS bloat as selectors repeat many times in the generated CSS.
+> Although all strategies accept multiple selectors, it's recommended to use one short selector to avoid CSS bloat — selectors repeat many times in the generated CSS.
 
 ### Keeping some preflight styles unaffected
 
-```diff
-scopedPreflightStyles({
-  isolationStrategy: isolateInsideOfContainer(
-    '.twp',
-    // every strategy provides some base options to fine tune the transformation
-+   {
-+     ignore: ["html", ":host", "*"],
-+   },
-  ),
-})
+Use `ignore` to pass certain preflight selectors through without modification:
+
+```css
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp;
+  ignore: html, :host, *;
+}
 ```
 
-### Removing some preflight styles by CSS selector
+### Removing preflight styles by selector
 
-```diff
-scopedPreflightStyles({
-  isolationStrategy: isolateInsideOfContainer(
-    '.twp',
-+   {
-+     remove: ["body", ":before", ":after"],
-+   },
-  ),
-})
+Use `remove` to strip preflight styles for specific selectors entirely:
+
+```css
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp;
+  remove: body, :before, :after;
+}
 ```
 
-### Your own/custom isolation strategy
+---
 
-`isolationStrategy` option is basically a function that accepts the original CSS selector and returns the transformed one.
+# Still using JS config?
+
+TailwindCSS v4 still supports JavaScript configuration via `@config`, though it's [deprecated in favor of CSS-first configuration](https://tailwindcss.com/docs/functions-and-directives#config-directive). This plugin works with both approaches — **choose one, not both:**
+
+| Approach | How | Recommended? |
+|----------|-----|:------------:|
+| **CSS-first** (`@plugin`) | Configure in your `.css` file | ✅ Yes |
+| **JS config** (`@config`) | Configure in `tailwind.config.js` | For SCSS or gradual migration |
+
+### Using `@config` with this plugin
 
 ```javascript
 // tailwind.config.js
+import scopedPreflightStyles from 'tailwindcss-scoped-preflight';
 
-import { scopedPreflightStyles } from 'tailwindcss-scoped-preflight';
-
-/** @type {import("tailwindcss").Config} */
-const config = {
-  // ...
+export default {
   plugins: [
-    // ...
     scopedPreflightStyles({
-      //it's just a function accepting { ruleSelector: string } and returning modified rule selector (prefixed or whatever you need)
-      isolationStrategy: ({ ruleSelector, ...whateverElse }) => {
-        // let's say we want to scope the styles for some global selectors Tailwind utilizes:
-        if (
-          [
-            'html',
-            ':host',
-            'body',
-          ].includes(ruleSelector)
-        ) {
-          return `${ruleSelector} .twp`; // adding the .twp class to these global things so only things under .twp would be affected
-        }
-
-        // let's say we want table to be preflighted only when under the .twp
-        if (ruleSelector === 'table') {
-          return `.twp ${ruleSelector}`;
-        }
-
-        // and don't want * to be preflighted at all
-        if (ruleSelector === '*') {
-          // returning an empty string or anything falsy/nullish removes the CSS rule
-          return '';
-        }
-
-        // Caution! Don't forget to return the value,
-        // falsy/nullish result will remove the rule.
-        // Either return the original ruleSelector, or inject some of existing strategies,
-        // let's fallback to the isolateInsideOfContainer strategy for this demo:
-        return isolateInsideOfContainer('.twp')({ ruleSelector, ...whateverElse });
-      },
+      isolationStrategy: 'inside',
+      selector: '.twp',
     }),
   ],
 };
-
-exports.default = config;
 ```
 
-### Modifying the preflight styles
+```css
+/* input.css */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+@config "./tailwind.config.js";
+```
 
-This option allows you to hook into the preflight styles to perform some modifications
-like removing or changing CSS properties.
+All options from the [inside](#31-lock-tailwind-preflight-inside-a-container) and [outside](#32-exclude-a-container-from-tailwind-preflight) strategy tables work the same way — pass them as object properties instead of CSS declarations.
 
-You may configure the modifications in a declarative manner (as an object) or provide a function to have more control.
+> **Important:** Even with `@config`, use the **new v4 string-based options** — not the v3 function-based API. See the [migration guide](#migration-guide-v3--v4) for the full mapping.
 
-#### Object syntax
+---
+
+# Using with SCSS/Sass
+
+Sass preprocessors parse `.scss` files **before** TailwindCSS sees them. The `@plugin` block syntax contains values like `selector: .twp;` that Sass misinterprets — it sees `.twp` as the start of a decimal number and fails:
+
+```
+Error: Expected digit.
+  ╷
+  │   selector: .twp;
+  │              ^
+  ╵
+```
+
+#### Option A: Separate CSS file (recommended)
+
+Move the `@plugin` directive and Tailwind imports to a plain `.css` file, then import it from your SCSS:
+
+```css
+/* tailwind.css */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp;
+}
+```
+
+```scss
+/* globals.scss */
+@use "tailwind.css";
+
+// your SCSS styles
+```
+
+#### Option B: Use `@config` with JS config
+
+Use [`@config`](#still-using-js-config) to configure the plugin in JavaScript — Sass won't try to parse the plugin options:
+
+```scss
+/* globals.scss */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+@config "./tailwind.config.js";
+
+// your SCSS styles
+```
+
+See the [`@config` section above](#using-config-with-this-plugin) for the `tailwind.config.js` example.
+
+---
+
+# Migration guide (v3 → v4)
+
+TailwindCSS v4 replaced JavaScript config files with a CSS-first API. This plugin follows the same shift — configure via `@plugin` in CSS (recommended) or via [`@config`](#still-using-js-config) with updated options.
+
+## Quick reference
+
+| v3 (tailwind.config.js)                                           | v4 (input.css)                                         |
+| ----------------------------------------------------------------- | ------------------------------------------------------ |
+| `plugins: [scopedPreflightStyles({ ... })]`                       | `@plugin "tailwindcss-scoped-preflight" { ... }`       |
+| `import { scopedPreflightStyles, isolateInsideOfContainer }`      | No JS import needed (or `import scopedPreflightStyles` with `@config`) |
+| `isolationStrategy: isolateInsideOfContainer('.twp')`             | `isolationStrategy: inside; selector: .twp;`           |
+| `isolationStrategy: isolateOutsideOfContainer('.no-twp')`         | `isolationStrategy: outside; selector: .no-twp;`       |
+| `['.twp', '[twp]']` (array)                                       | `selector: .twp, [twp];` (comma-separated)             |
+| `{ except: '.no-twp' }`                                           | `except: .no-twp;`                                     |
+| `{ plus: '.twp' }`                                                | `plus: .twp;`                                          |
+| `{ ignore: ['html', ':host'] }`                                   | `ignore: html, :host;`                                 |
+| `{ remove: ['body'] }`                                            | `remove: body;`                                        |
+| `modifyPreflightStyles: { ... }`                                  | Not available in v4                                    |
+| Custom `isolationStrategy` function                               | Not available in v4                                    |
+| `isolateForComponents`                                            | Not available in v4 — use `inside` strategy instead    |
+
+## Before/after: inside strategy
+
+**v3 (tailwind.config.js):**
+
+```javascript
+import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+export default {
+  plugins: [
+    scopedPreflightStyles({
+      isolationStrategy: isolateInsideOfContainer('.twp', {
+        except: '.no-twp',
+      }),
+    }),
+  ],
+};
+```
+
+**v4 (input.css):**
+
+```css
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp;
+  except: .no-twp;
+}
+```
+
+## Before/after: outside strategy
+
+**v3 (tailwind.config.js):**
+
+```javascript
+import { scopedPreflightStyles, isolateOutsideOfContainer } from 'tailwindcss-scoped-preflight';
+
+export default {
+  plugins: [
+    scopedPreflightStyles({
+      isolationStrategy: isolateOutsideOfContainer('.no-twp', {
+        plus: '.twp',
+      }),
+    }),
+  ],
+};
+```
+
+**v4 (input.css):**
+
+```css
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: outside;
+  selector: .no-twp;
+  plus: .twp;
+}
+```
+
+## Before/after: multiple selectors
+
+**v3 (tailwind.config.js):**
 
 ```javascript
 scopedPreflightStyles({
-  isolationStrategy: isolateInsideOfContainer('.twp'), // whatever
-  modifyPreflightStyles: {
-    html: {
-      // removes the line-height for the html selector
-      'line-height': null,
-      // changes the font-family
-      'font-family': '"Open Sans", sans-serif',
-    },
-    body: {
-      // replaces the margin value for the body selector in preflight styles
-      margin: '0 4px',
-      // following won't have any effect as this property is not in the preflight styles
-      color: 'red',
-    },
-  },
-});
+  isolationStrategy: isolateInsideOfContainer(['.twp', '[twp]']),
+})
 ```
 
-#### Function syntax
+**v4 (input.css):**
 
-```javascript
-scopedPreflightStyles({
-  isolationStrategy: isolateInsideOfContainer('.twp'), // whatever
-  modifyPreflightStyles: ({ selectorSet, property, value }) => {
-    // let's say you want to override the font family (no matter what the rule selector is)
-    if (property === 'font-family' && value !== 'inherit') {
-      return '"Open Sans", sans-serif';
-    }
-    // or body margin
-    if (selectorSet.has('body') && property === 'margin') {
-      return '0 4px';
-    }
-    // if you want to remove some property - return null
-    if (selectorSet.has('html') && property === 'line-height') {
-      return null;
-    }
-    // to keep the property as it is - you may return the original value;
-    // but returning undefined would have the same effect,
-    // so you may just omit such default return
-    return value;
-  },
-});
+```css
+@plugin "tailwindcss-scoped-preflight" {
+  isolationStrategy: inside;
+  selector: .twp, [twp];
+}
 ```
 
-# Migration guide (to v3)
+## Dropped features
 
-## from v2
+The following v3 features are not available in v4. TailwindCSS 4 moved away from JavaScript config entirely, so any feature that required a JS callback or JS-level hook cannot be supported.
 
-#### for 'matched only' mode users
-
-```diff
-import {
-  scopedPreflightStyles,
-+ isolateInsideOfContainer,
-} from 'tailwindcss-scoped-preflight';
-
-// ...
-     scopedPreflightStyles({
--       mode: 'matched only',
--       cssSelector: '.twp',
-+       isolationStrategy: isolateInsideOfContainer('.twp'),
-      }),
-```
-
-#### for 'except matched' mode users
-
-```diff
-import {
-  scopedPreflightStyles,
-+ isolateOutsideOfContainer,
-} from 'tailwindcss-scoped-preflight';
-
-// ...
-     scopedPreflightStyles({
--       mode: 'except matched',
--       cssSelector: '.notwp',
-+       isolationStrategy: isolateOutsideOfContainer('.notwp'),
-      }),
-```
-
-## from v1
-
-```diff
-import {
-  scopedPreflightStyles,
-+ isolateInsideOfContainer,
-} from 'tailwindcss-scoped-preflight';
-
-// ...
-     scopedPreflightStyles({
--       preflightSelector: '.twp',
--       disableCorePreflight: true,
-+       isolationStrategy: isolateInsideOfContainer('.twp'),
-      }),
-```
+| Feature | v3 Usage | Why removed |
+| ------- | -------- | ----------- |
+| `modifyPreflightStyles` | Object or function callback to alter individual CSS declarations | TW4 has no hook mechanism for JS-based style modification — all config is CSS strings |
+| Custom `isolationStrategy` function | `isolationStrategy: ({ ruleSelector }) => string` | `@plugin` CSS blocks only accept string scalar values, not functions |
+| `isolateForComponents` | Named export, was already deprecated in v3 | Deprecated in v3; removed in v4. Use `isolationStrategy: inside` with `rootStyles: add :where` for the same effect |
+| Named strategy imports | `import { isolateInsideOfContainer } from 'tailwindcss-scoped-preflight'` | No JS config to import into — use `@plugin` directive or default import with `@config` |

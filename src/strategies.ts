@@ -1,18 +1,22 @@
-import type { CSSRuleSelectorTransformer } from './index.js';
+export type CSSRuleSelectorTransformer = (info: { ruleSelector: string }) => string;
 
-interface Options {
+export interface StrategyBaseOptions {
   ignore?: string[];
   remove?: string[];
 }
 
-type SelectorBasedStrategy<ExtraOptions = unknown> = (
-  selectors: string | string[],
-  options?: Options & ExtraOptions,
-) => CSSRuleSelectorTransformer;
+export interface InsideStrategyOptions extends StrategyBaseOptions {
+  except?: string;
+  rootStyles?: 'move to container' | 'add :where';
+}
+
+export interface OutsideStrategyOptions extends StrategyBaseOptions {
+  plus?: string;
+}
 
 const optionsHandlerForIgnoreAndRemove = (
   selector: string,
-  { ignore, remove }: Options = {},
+  { ignore, remove }: StrategyBaseOptions = {},
 ): string | null => {
   if (remove?.some((s) => selector.includes(s)) === true) {
     return '';
@@ -46,10 +50,10 @@ function isPseudoElementSelector(ruleSelector: string) {
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container (example)
  */
-export const isolateInsideOfContainer: SelectorBasedStrategy<{
-  except?: string;
-  rootStyles?: 'move to container' | 'add :where';
-}> = (containerSelectors, options) => {
+export function isolateInsideOfContainer(
+  containerSelectors: string | string[],
+  options?: InsideStrategyOptions,
+): CSSRuleSelectorTransformer {
   const whereNotExcept =
     typeof options?.except === 'string' && options.except
       ? `:where(:not(${options.except},${options.except} *))`
@@ -78,7 +82,7 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
       return `${ruleSelector}${whereWithSubs}${whereNotExcept}`;
     }
   };
-};
+}
 
 /**
  * Isolates the TailwindCSS preflight styles outside of the container (assuming no TailwindCSS inside of it)
@@ -89,10 +93,10 @@ export const isolateInsideOfContainer: SelectorBasedStrategy<{
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container (example)
  */
-export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }> = (
-  containerSelectors,
-  options,
-) => {
+export function isolateOutsideOfContainer(
+  containerSelectors: string | string[],
+  options?: OutsideStrategyOptions,
+): CSSRuleSelectorTransformer {
   const whereNotContainerSelector = `:where(:not(${[containerSelectors]
     .flat()
     .map((s) => `${s},${s} *`)
@@ -124,31 +128,4 @@ export const isolateOutsideOfContainer: SelectorBasedStrategy<{ plus?: string }>
       .filter(Boolean)
       .join(',');
   };
-};
-
-/**
- * @deprecated Use `isolateInsideOfContainer` with rootStyles option set to 'add :where'
- * @description Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
- * @param componentSelectors
- * @param options
- * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
- * @param options.remove - list of preflight CSS selectors to remove from the final CSS - use it if you have any specific conflicts and really want to remove some preflight rules
- *
- * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#update-your-tailwind-css-configuration (example)
- */
-export const isolateForComponents: SelectorBasedStrategy = (
-  componentSelectors,
-  options,
-): CSSRuleSelectorTransformer => {
-  const componentSelectorsArray = [componentSelectors].flat();
-  const whereComponentSelectorsDirect = `:where(${componentSelectorsArray.join(',')})`;
-  const whereComponentSelectorsWithSubs = `:where(${componentSelectorsArray
-    .map((s) => `${s},${s} *`)
-    .join(',')})`;
-
-  return ({ ruleSelector }) =>
-    optionsHandlerForIgnoreAndRemove(ruleSelector, options) ??
-    (isRootSelector(ruleSelector)
-      ? `${ruleSelector} ${whereComponentSelectorsDirect}`
-      : `${ruleSelector}${whereComponentSelectorsWithSubs}`);
-};
+}

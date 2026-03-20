@@ -25,3 +25,7 @@ export async function hasHeight(locator: Locator) {
 export async function hasNoHeight(locator: Locator) {
   return expect(locator).toHaveCSS('height', '0px');
 }
+
+export async function hasLineHeight(locator: Locator) {
+  return expect(locator).toHaveCSS('line-height', /^[^0]+/);
+}

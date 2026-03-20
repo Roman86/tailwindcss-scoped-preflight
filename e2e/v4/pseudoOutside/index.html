@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pseudo-elements, Outside strategy v4</title>
+    <link rel="stylesheet" href="stylesout.css" />
+  </head>
+  <body>
+    <div class="no-twp" style="background-color: rgba(50, 0, 0, 0.1)">
+      <div data-no-height class="after:block after:size-12 after:bg-blue-500"></div>
+      <button>Btn Native</button>
+    </div>
+    should be a blue square down below:
+    <div data-has-height class="after:block after:border after:border-black after:size-12 after:bg-blue-500"></div>
+    <div>
+      <button data-tw>Btn TW</button>
+    </div>
+  </body>
+</html>

@@ -1,105 +1,127 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import postcss from 'postcss';
-import TailwindPlugin from 'tailwindcss/plugin.js';
-import type { CSSRuleObject } from 'tailwindcss/types/config.js';
+import postcssJs from 'postcss-js';
+import plugin from 'tailwindcss/plugin';
+import {
+  type CSSRuleSelectorTransformer,
+  type InsideStrategyOptions,
+  type OutsideStrategyOptions,
+  type StrategyBaseOptions,
+  isolateInsideOfContainer,
+  isolateOutsideOfContainer,
+} from './strategies.js';
 
-// if you see TS1470 - we actually just made an adapter here
-const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
-
-const { withOptions } = TailwindPlugin;
-
-interface PropsFilterInput {
-  selectorSet: Set<string>;
-  property: string;
-  value: any;
+// CSS @plugin blocks pass ignore/remove as comma-separated strings, not arrays
+interface CSSPluginBase {
+  selector: string | string[];
+  ignore?: string;
+  remove?: string;
 }
 
-export type CSSRuleSelectorTransformer = (info: { ruleSelector: string }) => string;
+// Extracts strategy-specific keys (excluding base ignore/remove) and marks the other strategy's keys as never
+type ExclusiveKeys<T> = keyof Omit<T, keyof StrategyBaseOptions>;
 
-type ModifyResult = string | null | undefined;
+type InsidePluginOptions = CSSPluginBase &
+  Pick<InsideStrategyOptions, ExclusiveKeys<InsideStrategyOptions>> &
+  { [K in ExclusiveKeys<OutsideStrategyOptions>]?: never } &
+  { isolationStrategy: 'inside' };
 
-type ModifyStylesHook = (input: PropsFilterInput) => ModifyResult;
+type OutsidePluginOptions = CSSPluginBase &
+  Pick<OutsideStrategyOptions, ExclusiveKeys<OutsideStrategyOptions>> &
+  { [K in ExclusiveKeys<InsideStrategyOptions>]?: never } &
+  { isolationStrategy: 'outside' };
 
-interface PluginOptions {
-  isolationStrategy: CSSRuleSelectorTransformer;
-  /** @deprecated prefer using modifyPreflightStyles */
-  propsFilter?: (input: PropsFilterInput) => boolean | undefined;
-  modifyPreflightStyles?: Record<string, Record<string, ModifyResult>> | ModifyStylesHook;
+type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
+
+const USAGE_EXAMPLE = `  @plugin "tailwindcss-scoped-preflight" {\n    isolationStrategy: inside;\n    selector: .twp;\n  }`;
+
+function parseCommaList(value?: string): string[] | undefined {
+  return value ? value.split(',').map((s) => s.trim()) : undefined;
+}
+
+// Escape colons in container selectors so Tailwind modifier separators
+// (e.g. .xl:px-foo) become valid CSS (e.g. .xl\:px-foo).
+// Container selectors are simple class/ID selectors — no pseudo-classes expected.
+function escapeSelectorColon(selector: string): string {
+  return selector.replace(/(?<!\\):/g, '\\:');
+}
+
+function parseSelectors(raw: string | string[]): string[] {
+  const list = Array.isArray(raw)
+    ? raw.map((s) => s.trim()).filter(Boolean)
+    : typeof raw === 'string'
+      ? raw.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+
+  if (list.length === 0) {
+    throw new Error(
+      `tailwindcss-scoped-preflight: selector is required.\nExample:\n${USAGE_EXAMPLE}`,
+    );
+  }
+
+  return list.map(escapeSelectorColon);
+}
+
+function resolveStrategy(options: V4PluginOptions): CSSRuleSelectorTransformer {
+  const selectors = parseSelectors(options.selector);
+  const ignore = parseCommaList(options.ignore);
+  const remove = parseCommaList(options.remove);
+
+  if (options.isolationStrategy === 'inside') {
+    return isolateInsideOfContainer(selectors, {
+      ignore,
+      remove,
+      except: options.except,
+      rootStyles: options.rootStyles,
+    });
+  }
+
+  if (options.isolationStrategy === 'outside') {
+    return isolateOutsideOfContainer(selectors, {
+      ignore,
+      remove,
+      plus: options.plus,
+    });
+  }
+
+  throw new Error(
+    `tailwindcss-scoped-preflight: isolationStrategy must be "inside" or "outside".\n` +
+      `Got: "${(options as { isolationStrategy: string }).isolationStrategy}". Example:\n${USAGE_EXAMPLE}`,
+  );
 }
 
 /**
- * TailwindCSS plugin to scope the preflight styles
- * @param isolationStrategy - function to transform the preflight CSS selectors,
- *  import {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container isolateInsideOfContainer},
- *  {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container isolateOutsideOfContainer},
- *  {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#update-your-tailwind-css-configuration isolateForComponents} or write {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#your-owncustom-isolation-strategy your own}
- * @param propsFilter - function to filter the preflight CSS properties and values, return false to remove the property. Any other value (including true and undefined) will leave the prop intact
- * @param modifyPreflightStyles - function to modify the preflight CSS properties and their values, return null to remove the property. Any other returned value will be used as a new value for the property. If you don't want to change it - return the old value (provided in argument object as `value`).
+ * TailwindCSS v4 plugin to scope the preflight styles to a specific container.
+ *
+ * Use via the @plugin CSS directive:
+ * @example
+ * ```css
+ * @plugin "tailwindcss-scoped-preflight" {
+ *   isolationStrategy: inside;
+ *   selector: .twp;
+ * }
+ * ```
+ *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
-export const scopedPreflightStyles = withOptions<PluginOptions>(
-  ({ isolationStrategy, propsFilter, modifyPreflightStyles }) =>
-    ({ addBase, corePlugins }) => {
-      const baseCssPath = req.resolve('tailwindcss/lib/css/preflight.css');
+export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions>(
+  (options) =>
+    ({ addBase }) => {
+      if (!options) {
+        throw new Error(
+          `tailwindcss-scoped-preflight: plugin options are required.\nExample:\n${USAGE_EXAMPLE}`,
+        );
+      }
+      const strategy = resolveStrategy(options);
+
+      const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
+      const baseCssPath = req.resolve('tailwindcss/preflight.css');
       const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
 
-      if (typeof isolationStrategy !== 'function') {
-        throw new Error(
-          "TailwindCssScopedPreflightPlugin: isolationStrategy option must be a function - custom one or pre-bundled - import { isolateInsideOfContainer, isolateOutsideOfContainer, isolateForComponents } from 'tailwindcss-scoped-preflight-plugin')",
-        );
-      }
-
-      if (corePlugins('preflight')) {
-        throw new Error(
-          `TailwindCssScopedPreflightPlugin: TailwindCSS corePlugins.preflight config option must be set to false`,
-        );
-      }
-
-      let modifyStylesHook: ModifyStylesHook | undefined;
-      if (typeof modifyPreflightStyles === 'function') {
-        modifyStylesHook = modifyPreflightStyles;
-      } else if (modifyPreflightStyles) {
-        const configEntries = Object.entries(modifyPreflightStyles);
-        modifyStylesHook = ({ selectorSet, property, value }) => {
-          const matchingEntry = configEntries.find(([sel]) => selectorSet.has(sel));
-          return matchingEntry?.[1]?.[property];
-        };
-      }
-
       baseCssStyles.walkRules((rule) => {
-        if (propsFilter || modifyPreflightStyles) {
-          const selectorSet = new Set(rule.selectors);
-          rule.nodes = rule.nodes?.map((node) => {
-            if (node instanceof postcss.Declaration) {
-              const newValue = modifyStylesHook
-                ? modifyStylesHook({
-                    selectorSet,
-                    property: node.prop,
-                    value: node.value,
-                  })
-                : node.value;
-
-              const filterValue = propsFilter
-                ? propsFilter({
-                    selectorSet,
-                    property: node.prop,
-                    value: node.value,
-                  })
-                : true;
-              if (filterValue === false || newValue === null) {
-                return postcss.comment({
-                  text: node.toString(),
-                });
-              } else if (typeof newValue !== 'undefined' && newValue !== node.value) {
-                node.value = newValue;
-              }
-            }
-            return node;
-          });
-        }
         rule.selectors = rule.selectors
-          .map((s) => isolationStrategy({ ruleSelector: s }))
+          .map((s) => strategy({ ruleSelector: s }))
           .filter((value, index, array) => value && array.indexOf(value) === index);
         rule.selector = rule.selectors.join(',\n');
         if (!rule.nodes.some((n) => n instanceof postcss.Declaration)) {
@@ -107,22 +129,28 @@ export const scopedPreflightStyles = withOptions<PluginOptions>(
         }
       });
 
-      addBase(
-        baseCssStyles.nodes.filter((node, i, all) => {
-          const next = all[i + 1];
-          return node instanceof postcss.Rule
-            ? node.nodes.length > 0 && node.selector
-            : node instanceof postcss.Comment
-              ? next instanceof postcss.Rule && next.selector && next.nodes.length > 0
-              : true;
-        }) as unknown as CSSRuleObject[],
-      );
+      // Remove empty rules and orphaned comments
+      const cleanedRoot = postcss.root();
+      baseCssStyles.nodes.forEach((node, i, all) => {
+        const next = all[i + 1];
+        if (node instanceof postcss.Rule) {
+          if (node.nodes.length > 0 && node.selector) {
+            cleanedRoot.append(node.clone());
+          }
+        } else if (node instanceof postcss.Comment) {
+          if (next instanceof postcss.Rule && next.selector && next.nodes.length > 0) {
+            cleanedRoot.append(node.clone());
+          }
+        } else {
+          cleanedRoot.append(node.clone());
+        }
+      });
+
+      // Convert PostCSS AST to CssInJs for v4 addBase
+      const cssInJs = postcssJs.objectify(cleanedRoot);
+      addBase(cssInJs);
     },
-  () => ({
-    corePlugins: {
-      preflight: false,
-    },
-  }),
 );
 
-export * from './strategies.js';
+// Default export for @plugin directive in TailwindCSS v4
+export default scopedPreflightStyles;

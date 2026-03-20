@@ -70,9 +70,17 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npm run test/serve',
-    url: 'http://127.0.0.1:8080',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'npm run test/serve',
+      url: 'http://127.0.0.1:8080',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'npx vite e2e/v4/vite --port 8081 --host 127.0.0.1',
+      url: 'http://127.0.0.1:8081',
+      reuseExistingServer: !process.env.CI,
+      timeout: 30000,
+    },
+  ],
 });

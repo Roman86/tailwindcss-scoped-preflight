@@ -1,81 +1,171 @@
-import * as tailwindcss_types_config_js from 'tailwindcss/types/config.js';
+import { N, P } from './resolve-config-QUZ9b-Gn.mjs';
 
-interface Options {
+/**
+ * The source code for one or more nodes in the AST
+ *
+ * This generally corresponds to a stylesheet
+ */
+interface Source {
+    /**
+     * The path to the file that contains the referenced source code
+     *
+     * If this references the *output* source code, this is `null`.
+     */
+    file: string | null;
+    /**
+     * The referenced source code
+     */
+    code: string;
+}
+/**
+ * The file and offsets within it that this node covers
+ *
+ * This can represent either:
+ * - A location in the original CSS which caused this node to be created
+ * - A location in the output CSS where this node resides
+ */
+type SourceLocation = [source: Source, start: number, end: number];
+type PluginFn = (api: PluginAPI) => void;
+type PluginWithConfig = {
+    handler: PluginFn;
+    config?: UserConfig;
+    /** @internal */
+    reference?: boolean;
+    src?: SourceLocation | undefined;
+};
+type PluginWithOptions<T> = {
+    (options?: T): PluginWithConfig;
+    __isOptionsFunction: true;
+};
+type Plugin = PluginFn | PluginWithConfig | PluginWithOptions<any>;
+type PluginAPI = {
+    addBase(base: CssInJs): void;
+    addVariant(name: string, variant: string | string[] | CssInJs): void;
+    matchVariant<T = string>(name: string, cb: (value: T | string, extra: {
+        modifier: string | null;
+    }) => string | string[], options?: {
+        values?: Record<string, T>;
+        sort?(a: {
+            value: T | string;
+            modifier: string | null;
+        }, b: {
+            value: T | string;
+            modifier: string | null;
+        }): number;
+    }): void;
+    addUtilities(utilities: Record<string, CssInJs | CssInJs[]> | Record<string, CssInJs | CssInJs[]>[], options?: {}): void;
+    matchUtilities(utilities: Record<string, (value: string, extra: {
+        modifier: string | null;
+    }) => CssInJs | CssInJs[]>, options?: Partial<{
+        type: string | string[];
+        supportsNegativeValues: boolean;
+        values: Record<string, string> & {
+            __BARE_VALUE__?: (value: N) => string | undefined;
+        };
+        modifiers: 'any' | Record<string, string>;
+    }>): void;
+    addComponents(utilities: Record<string, CssInJs> | Record<string, CssInJs>[], options?: {}): void;
+    matchComponents(utilities: Record<string, (value: string, extra: {
+        modifier: string | null;
+    }) => CssInJs>, options?: Partial<{
+        type: string | string[];
+        supportsNegativeValues: boolean;
+        values: Record<string, string> & {
+            __BARE_VALUE__?: (value: N) => string | undefined;
+        };
+        modifiers: 'any' | Record<string, string>;
+    }>): void;
+    theme(path: string, defaultValue?: any): any;
+    config(path?: string, defaultValue?: any): any;
+    prefix(className: string): string;
+};
+type CssInJs = {
+    [key: string]: string | string[] | CssInJs | CssInJs[];
+};
+
+type ResolvableTo<T> = T | ((utils: P) => T);
+type ThemeValue = ResolvableTo<Record<string, unknown>> | null | undefined;
+type ThemeConfig = Record<string, ThemeValue> & {
+    extend?: Record<string, ThemeValue>;
+};
+type ContentFile = string | {
+    raw: string;
+    extension?: string;
+};
+type DarkModeStrategy = false | 'media' | 'class' | ['class', string] | 'selector' | ['selector', string] | ['variant', string | string[]];
+interface UserConfig {
+    presets?: UserConfig[];
+    theme?: ThemeConfig;
+    plugins?: Plugin[];
+}
+interface UserConfig {
+    content?: ContentFile[] | {
+        relative?: boolean;
+        files: ContentFile[];
+    };
+}
+interface UserConfig {
+    darkMode?: DarkModeStrategy;
+}
+interface UserConfig {
+    prefix?: string;
+}
+interface UserConfig {
+    blocklist?: string[];
+}
+interface UserConfig {
+    important?: boolean | string;
+}
+interface UserConfig {
+    future?: 'all' | Record<string, boolean>;
+}
+interface UserConfig {
+    experimental?: 'all' | Record<string, boolean>;
+}
+
+interface StrategyBaseOptions {
     ignore?: string[];
     remove?: string[];
 }
-type SelectorBasedStrategy<ExtraOptions = unknown> = (selectors: string | string[], options?: Options & ExtraOptions) => CSSRuleSelectorTransformer;
-/**
- * Isolates the TailwindCSS preflight styles inside of the container (assuming all the TailwindCSS is inside of this container)
- *
- * @param containerSelectors
- * @param options
- * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
- * @param options.remove - list of preflight CSS selectors to remove from the final CSS - use it if you have any specific conflicts and really want to remove some preflight rules
- * @param options.rootStyles - 'move to container' (default) - moves the root styles to the container styles (by simply replacing the selector), 'add :where' - adds ` :where` to the root selector so styles are still in roots, but only matching items would be affected
- *
- * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container (example)
- */
-declare const isolateInsideOfContainer: SelectorBasedStrategy<{
+interface InsideStrategyOptions extends StrategyBaseOptions {
     except?: string;
     rootStyles?: 'move to container' | 'add :where';
-}>;
-/**
- * Isolates the TailwindCSS preflight styles outside of the container (assuming no TailwindCSS inside of it)
- * @param containerSelectors
- * @param options
- * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
- * @param options.remove - list of preflight CSS selectors to remove from the final CSS - use it if you have any specific conflicts and really want to remove some preflight rules
- *
- * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container (example)
- */
-declare const isolateOutsideOfContainer: SelectorBasedStrategy<{
+}
+interface OutsideStrategyOptions extends StrategyBaseOptions {
     plus?: string;
-}>;
-/**
- * @deprecated Use `isolateInsideOfContainer` with rootStyles option set to 'add :where'
- * @description Isolates the TailwindCSS preflight styles within the component selector (not inside of the container, but immediately)
- * @param componentSelectors
- * @param options
- * @param options.ignore - list of preflight CSS selectors to ignore (don't isolate) - these will not be affected by the transformation
- * @param options.remove - list of preflight CSS selectors to remove from the final CSS - use it if you have any specific conflicts and really want to remove some preflight rules
- *
- * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight#update-your-tailwind-css-configuration (example)
- */
-declare const isolateForComponents: SelectorBasedStrategy;
+}
 
-interface PropsFilterInput {
-    selectorSet: Set<string>;
-    property: string;
-    value: any;
+interface CSSPluginBase {
+    selector: string | string[];
+    ignore?: string;
+    remove?: string;
 }
-type CSSRuleSelectorTransformer = (info: {
-    ruleSelector: string;
-}) => string;
-type ModifyResult = string | null | undefined;
-type ModifyStylesHook = (input: PropsFilterInput) => ModifyResult;
-interface PluginOptions {
-    isolationStrategy: CSSRuleSelectorTransformer;
-    /** @deprecated prefer using modifyPreflightStyles */
-    propsFilter?: (input: PropsFilterInput) => boolean | undefined;
-    modifyPreflightStyles?: Record<string, Record<string, ModifyResult>> | ModifyStylesHook;
-}
+type ExclusiveKeys<T> = keyof Omit<T, keyof StrategyBaseOptions>;
+type InsidePluginOptions = CSSPluginBase & Pick<InsideStrategyOptions, ExclusiveKeys<InsideStrategyOptions>> & {
+    [K in ExclusiveKeys<OutsideStrategyOptions>]?: never;
+} & {
+    isolationStrategy: 'inside';
+};
+type OutsidePluginOptions = CSSPluginBase & Pick<OutsideStrategyOptions, ExclusiveKeys<OutsideStrategyOptions>> & {
+    [K in ExclusiveKeys<InsideStrategyOptions>]?: never;
+} & {
+    isolationStrategy: 'outside';
+};
+type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
 /**
- * TailwindCSS plugin to scope the preflight styles
- * @param isolationStrategy - function to transform the preflight CSS selectors,
- *  import {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-inside-of-container isolateInsideOfContainer},
- *  {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#isolate-outside-of-container isolateOutsideOfContainer},
- *  {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#update-your-tailwind-css-configuration isolateForComponents} or write {@link https://www.npmjs.com/package/tailwindcss-scoped-preflight#your-owncustom-isolation-strategy your own}
- * @param propsFilter - function to filter the preflight CSS properties and values, return false to remove the property. Any other value (including true and undefined) will leave the prop intact
- * @param modifyPreflightStyles - function to modify the preflight CSS properties and their values, return null to remove the property. Any other returned value will be used as a new value for the property. If you don't want to change it - return the old value (provided in argument object as `value`).
+ * TailwindCSS v4 plugin to scope the preflight styles to a specific container.
+ *
+ * Use via the @plugin CSS directive:
+ * @example
+ * ```css
+ * @plugin "tailwindcss-scoped-preflight" {
+ *   isolationStrategy: inside;
+ *   selector: .twp;
+ * }
+ * ```
+ *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
-declare const scopedPreflightStyles: {
-    (options: PluginOptions): {
-        handler: tailwindcss_types_config_js.PluginCreator;
-        config?: Partial<tailwindcss_types_config_js.Config>;
-    };
-    __isOptionsFunction: true;
-};
+declare const scopedPreflightStyles: PluginWithOptions<V4PluginOptions>;
 
-export { type CSSRuleSelectorTransformer, isolateForComponents, isolateInsideOfContainer, isolateOutsideOfContainer, scopedPreflightStyles };
+export { scopedPreflightStyles as default, scopedPreflightStyles };
