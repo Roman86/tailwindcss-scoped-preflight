@@ -20,7 +20,7 @@ So you can control exactly where in the DOM to apply these base styles — usual
 
 [Migrate from v3](#migration-guide-v3--v4)
 
-Looking for the v3 documentation? [v3 README](https://github.com/Roman86/tailwindcss-scoped-preflight/blob/v3.5.8/README.md)
+Looking for the v3 documentation? [v3 README](https://github.com/Roman86/tailwindcss-scoped-preflight/blob/v3/README.md)
 
 Version 4 is built for **TailwindCSS v4** and uses the new CSS-first `@plugin` API — no JavaScript config needed.
 

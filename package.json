@@ -18,11 +18,9 @@
   "scripts": {
     "build": "tsup",
     "build/watch": "tsup --watch",
-    "test": "npm run test/build && npm run test/build:v4 && npm run test/build:vite && playwright test",
-    "test/build": "npx tsx e2e/build-e2e.ts",
-    "test/build:v4": "npx tsx e2e/v4/build-v4.ts",
+    "test": "npm run test/build && npm run test/build:vite && playwright test",
+    "test/build": "npx tsx e2e/build-css.ts",
     "test/build:vite": "npx tsx e2e/build-vite.ts",
-    "test/watch": "npx tsx watch --include \"./dist/*\" --include \"./e2e/**/*.html\" e2e/build-e2e.ts",
     "test/serve": "http-server ./e2e -p 8080 -c-1",
     "test/ui": "playwright test --ui"
   },

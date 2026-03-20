@@ -3,36 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Pseudo-elements, Inside strategy</title>
+    <title>Pseudo-elements, Inside strategy v4</title>
     <link rel="stylesheet" href="stylesout.css" />
   </head>
   <body>
-    <div class="no-tw">
-      <div data-no-height class="after:block after:size-12 after:bg-blue-500">
-        <!-- should be empty div-->
-      </div>
-      <input type="number" placeholder="age" class="placeholder-amber-400" />
-      <input type="file" title="file untouched" />
-      <progress class="progress-amber-400" max="100" value="50"></progress>
+    <div class="no-twp">
+      <div data-no-height class="after:block after:size-12 after:bg-blue-500"></div>
     </div>
     <div id="somecontainer">
-        should have blue square below:
-      <div data-has-height class="after:block after:border after:border-black after:size-12 after:bg-blue-500">
-      </div>
-      <input type="number" placeholder="age" class="placeholder-amber-400" />
-      <div>
-        <input type="file" placeholder="file preflight" />
-        <progress class="progress-amber-400" max="100" value="50"></progress>
-        <button>Btw TW</button>
-      </div>
-      <div class="no-tw">
+      should have blue square below:
+      <div data-has-height class="after:block after:border after:border-black after:size-12 after:bg-blue-500"></div>
+      <div class="no-twp">
         <div class="after:block after:border after:border-black after:size-12 after:bg-blue-500">
           should NOT have blue square after
         </div>
-        <input type="file" placeholder="file untouched" />
-        <progress class="progress-amber-400" max="100" value="50"></progress>
-          <button>Btw Native</button>
       </div>
     </div>
   </body>

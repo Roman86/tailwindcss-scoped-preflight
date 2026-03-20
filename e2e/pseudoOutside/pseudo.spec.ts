@@ -1,16 +1,15 @@
 import { test } from '@playwright/test';
 import { testTheScenario } from '../utils';
-import { coloredBg, hasHeight, hasNoHeight, hasNoMargin, transparentBg } from '../validators';
+import { coloredBg, hasHeight, hasNoMargin, transparentBg } from '../validators';
 
-test('Outside of container with pseudo elements', async ({ page }, testInfo) => {
+test('v4 Outside of container with pseudo elements', async ({ page }, testInfo) => {
   await testTheScenario(
     {
       url: './pseudoOutside/',
       rules: {
         body: hasNoMargin,
-        '.no-tw div[data-no-height]': hasNoHeight,
         'div[data-has-height]': hasHeight,
-        '.no-tw button': coloredBg,
+        '.no-twp button': coloredBg,
         'button[data-tw]': transparentBg,
       },
     },

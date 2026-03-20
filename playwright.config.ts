@@ -77,7 +77,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: 'npx vite e2e/v4/vite --port 8081 --host 127.0.0.1',
+      command: 'npx vite e2e/vite --port 8081 --host 127.0.0.1',
       url: 'http://127.0.0.1:8081',
       reuseExistingServer: !process.env.CI,
       timeout: 30000,

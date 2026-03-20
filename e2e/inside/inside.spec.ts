@@ -1,17 +1,22 @@
 import { test } from '@playwright/test';
 import { testTheScenario } from '../utils';
-import { coloredBg, hasMargin, hasNoMargin, transparentBg } from '../validators';
+import { coloredBg, hasHeight, hasLineHeight, hasMargin, hasNoMargin, transparentBg } from '../validators';
 
-test('Inside of container', async ({ page }, testInfo) => {
+test('v4 Inside of container', async ({ page }, testInfo) => {
   await testTheScenario(
     {
       url: './inside/',
       rules: {
+        // ISOL-01: basic inside scoping
         body: hasMargin,
-        'p.tw': hasNoMargin,
-        'p.tw~p:not(.tw)': hasMargin,
-        'p.tw button.no-tw': coloredBg,
-        'p.tw .no-tw+button': transparentBg,
+        'p.twp': hasNoMargin,
+        'p.twp~p:not(.twp)': hasMargin,
+        'p.twp button.no-twp': coloredBg,
+        'p.twp .no-twp+button': transparentBg,
+        // ISOL-03: root-selector styles moved to container
+        'body > p.twp': hasLineHeight,
+        // ISOL-04: pseudo-element scoping — visible inside container
+        '.twp div[data-has-height]': hasHeight,
       },
     },
     page,

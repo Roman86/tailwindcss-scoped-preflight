@@ -2,7 +2,7 @@ import { build } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
-const viteDir = path.resolve('e2e/v4/vite');
+const viteDir = path.resolve('e2e/vite');
 
 await build({
   root: viteDir,
@@ -16,4 +16,4 @@ await build({
   logLevel: 'error',
 });
 
-console.log('Built: e2e/v4/vite/dist/');
+console.log('Built: e2e/vite/dist/');
