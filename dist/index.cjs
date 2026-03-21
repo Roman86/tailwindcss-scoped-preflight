@@ -111,10 +111,19 @@ var isolateForComponents = (componentSelectors, options) => {
 
 // src/index.ts
 var import_meta = {};
-var req = typeof require !== "undefined" ? require : (0, import_node_module.createRequire)(import_meta.url);
+function resolveRequire() {
+  try {
+    if (typeof require === "function" && typeof require.resolve === "function") {
+      return require;
+    }
+  } catch {
+  }
+  return (0, import_node_module.createRequire)(import_meta.url);
+}
 var { withOptions } = import_plugin.default;
 var scopedPreflightStyles = withOptions(
   ({ isolationStrategy, propsFilter, modifyPreflightStyles }) => ({ addBase, corePlugins }) => {
+    const req = resolveRequire();
     const baseCssPath = req.resolve("tailwindcss/lib/css/preflight.css");
     const baseCssStyles = import_postcss.default.parse((0, import_node_fs.readFileSync)(baseCssPath, "utf8"));
     if (typeof isolationStrategy !== "function") {

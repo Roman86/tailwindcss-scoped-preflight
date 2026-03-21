@@ -80,10 +80,19 @@ var isolateForComponents = (componentSelectors, options) => {
 };
 
 // src/index.ts
-var req = typeof __require !== "undefined" ? __require : createRequire(import.meta.url);
+function resolveRequire() {
+  try {
+    if (typeof __require === "function" && typeof __require.resolve === "function") {
+      return __require;
+    }
+  } catch {
+  }
+  return createRequire(import.meta.url);
+}
 var { withOptions } = TailwindPlugin;
 var scopedPreflightStyles = withOptions(
   ({ isolationStrategy, propsFilter, modifyPreflightStyles }) => ({ addBase, corePlugins }) => {
+    const req = resolveRequire();
     const baseCssPath = req.resolve("tailwindcss/lib/css/preflight.css");
     const baseCssStyles = postcss.parse(readFileSync(baseCssPath, "utf8"));
     if (typeof isolationStrategy !== "function") {

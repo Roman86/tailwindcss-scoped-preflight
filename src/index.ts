@@ -4,8 +4,19 @@ import postcss from 'postcss';
 import TailwindPlugin from 'tailwindcss/plugin.js';
 import type { CSSRuleObject } from 'tailwindcss/types/config.js';
 
-// if you see TS1470 - we actually just made an adapter here
-const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
+// Lazy require resolver — deferred to plugin execution to avoid issues
+// with bundlers (e.g. Vite) that intercept top-level require/import.meta.url
+function resolveRequire(): NodeRequire {
+  try {
+    // In CJS or Node ESM with --experimental-require-module, native require works
+    if (typeof require === 'function' && typeof require.resolve === 'function') {
+      return require;
+    }
+  } catch {
+    // Bundler shim — fall through to createRequire
+  }
+  return createRequire(import.meta.url);
+}
 
 const { withOptions } = TailwindPlugin;
 
@@ -41,6 +52,7 @@ interface PluginOptions {
 export const scopedPreflightStyles = withOptions<PluginOptions>(
   ({ isolationStrategy, propsFilter, modifyPreflightStyles }) =>
     ({ addBase, corePlugins }) => {
+      const req = resolveRequire();
       const baseCssPath = req.resolve('tailwindcss/lib/css/preflight.css');
       const baseCssStyles = postcss.parse(readFileSync(baseCssPath, 'utf8'));
 
