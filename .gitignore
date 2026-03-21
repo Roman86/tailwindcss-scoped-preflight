@@ -8,12 +8,16 @@
 
 # testing
 /coverage
+e2e/vite-project/node_modules/
+e2e/vite-project/dist/
 
 # misc
 .DS_Store
 *.pem
 .idea
 CLAUDE.md
+.claude/
+.planning/
 
 # debug
 npm-debug.log*
@@ -30,7 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 .env*.local
-/test-results/
+test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/

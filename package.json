@@ -3,6 +3,9 @@
   "version": "3.5.8",
   "description": "To avoid style conflicts (CSS collisions/interference side effects) when using Tailwind CSS with other UI libraries like Antd, Vuetify etc.",
   "type": "module",
+  "publishConfig": {
+    "tag": "v3"
+  },
   "source": "src/index.ts",
   "module": "dist/index.js",
   "main": "dist/index.cjs",
@@ -18,8 +21,9 @@
   "scripts": {
     "build": "tsup",
     "build/watch": "tsup --watch",
-    "test": "npm run test/build && playwright test",
+    "test": "npm run test/build && npm run test/build:vite && playwright test",
     "test/build": "npx tsx e2e/build-e2e.ts",
+    "test/build:vite": "cd e2e/vite-project && npm install --install-strategy=nested --silent && npm run build",
     "test/watch": "npx tsx watch --include \"./dist/*\" --include \"./e2e/**/*.html\" e2e/build-e2e.ts",
     "test/serve": "http-server ./e2e -p 8080 -c-1",
     "test/ui": "playwright test --ui"
@@ -43,7 +47,7 @@
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "2.4.7",
-    "@playwright/test": "^1.45.3",
+    "@playwright/test": "1.56.1",
     "@types/node": "^22.1.0",
     "http-server": "^14.1.1",
     "tsup": "^8.5.1",
