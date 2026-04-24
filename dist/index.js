@@ -390,9 +390,23 @@ function isolateOutsideOfContainer(containerSelectors, options) {
 
 // src/index.ts
 var USAGE_EXAMPLE = `  @plugin "tailwindcss-scoped-preflight" {
-    isolationStrategy: inside;
+    isolation-strategy: inside;
     selector: .twp;
   }`;
+var KEBAB_ALIASES = {
+  "isolation-strategy": "isolationStrategy",
+  "root-styles": "rootStyles"
+};
+function normalizeOptionKeys(raw) {
+  const out = { ...raw };
+  for (const [kebab, camel] of Object.entries(KEBAB_ALIASES)) {
+    if (kebab in out) {
+      if (!(camel in out)) out[camel] = out[kebab];
+      delete out[kebab];
+    }
+  }
+  return out;
+}
 function parseCommaList(value) {
   return value ? value.split(",").map((s) => s.trim()) : void 0;
 }
@@ -444,12 +458,17 @@ Example:
 ${USAGE_EXAMPLE}`
       );
     }
-    const strategy = resolveStrategy(options);
+    const normalized = normalizeOptionKeys(
+      options
+    );
+    const strategy = resolveStrategy(normalized);
     const req = typeof __require !== "undefined" ? __require : createRequire(import.meta.url);
     const baseCssPath = req.resolve("tailwindcss/preflight.css");
     const baseCssStyles = postcss.parse(readFileSync(baseCssPath, "utf8"));
     baseCssStyles.walkRules((rule) => {
-      rule.selectors = rule.selectors.map((s) => strategy({ ruleSelector: s })).filter((value, index2, array) => value && array.indexOf(value) === index2);
+      rule.selectors = rule.selectors.map((s) => strategy({ ruleSelector: s })).filter(
+        (value, index2, array) => value && array.indexOf(value) === index2
+      );
       rule.selector = rule.selectors.join(",\n");
       if (!rule.nodes.some((n) => n instanceof postcss.Declaration)) {
         rule.nodes = [];

@@ -144,12 +144,12 @@ type ExclusiveKeys<T> = keyof Omit<T, keyof StrategyBaseOptions>;
 type InsidePluginOptions = CSSPluginBase & Pick<InsideStrategyOptions, ExclusiveKeys<InsideStrategyOptions>> & {
     [K in ExclusiveKeys<OutsideStrategyOptions>]?: never;
 } & {
-    isolationStrategy: 'inside';
+    isolationStrategy: "inside";
 };
 type OutsidePluginOptions = CSSPluginBase & Pick<OutsideStrategyOptions, ExclusiveKeys<OutsideStrategyOptions>> & {
     [K in ExclusiveKeys<InsideStrategyOptions>]?: never;
 } & {
-    isolationStrategy: 'outside';
+    isolationStrategy: "outside";
 };
 type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
 /**
@@ -159,7 +159,7 @@ type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
  * @example
  * ```css
  * @plugin "tailwindcss-scoped-preflight" {
- *   isolationStrategy: inside;
+ *   isolation-strategy: inside;
  *   selector: .twp;
  * }
  * ```
