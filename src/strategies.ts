@@ -5,7 +5,7 @@ export interface StrategyBaseOptions {
   remove?: string[];
 }
 
-export interface InsideStrategyOptions extends StrategyBaseOptions {
+export type InsideStrategyOptions = StrategyBaseOptions & {
   except?: string;
   rootStyles?: 'move to container' | 'add :where';
 }

@@ -11,30 +11,31 @@ import {
   isolateInsideOfContainer,
   isolateOutsideOfContainer,
 } from './strategies.js';
+import { KebabCasedPropertiesDeep, Schema } from "type-fest";
 
 // CSS @plugin blocks pass ignore/remove as comma-separated strings, not arrays
-interface CSSPluginBase {
+type CSSPluginBase = {
   selector: string | string[];
-  ignore?: string;
-  remove?: string;
+} & Schema<StrategyBaseOptions, string>
+
+type OptionalNever<O> = {
+  [K in keyof O]?: never;
 }
 
-// Extracts strategy-specific keys (excluding base ignore/remove) and marks the other strategy's keys as never
-type ExclusiveKeys<T> = keyof Omit<T, keyof StrategyBaseOptions>;
+type PluginStrategyOptions<strategyId extends string, TargetStrategyOptions extends StrategyBaseOptions, OtherStrategyOptionsToAddAsOptionalNever extends StrategyBaseOptions> =
+  OptionalNever<OtherStrategyOptionsToAddAsOptionalNever> &
+  CSSPluginBase &
+  Omit<TargetStrategyOptions, keyof CSSPluginBase> &
+  { isolationStrategy: strategyId };
 
-type InsidePluginOptions = CSSPluginBase &
-  Pick<InsideStrategyOptions, ExclusiveKeys<InsideStrategyOptions>> &
-  { [K in ExclusiveKeys<OutsideStrategyOptions>]?: never } &
-  { isolationStrategy: 'inside' };
+type PluginInsideStrategyOptions = PluginStrategyOptions<'inside', InsideStrategyOptions, OutsideStrategyOptions>;
+type PluginOutsideStrategyOptions = PluginStrategyOptions<'outside', OutsideStrategyOptions, InsideStrategyOptions>;
 
-type OutsidePluginOptions = CSSPluginBase &
-  Pick<OutsideStrategyOptions, ExclusiveKeys<OutsideStrategyOptions>> &
-  { [K in ExclusiveKeys<InsideStrategyOptions>]?: never } &
-  { isolationStrategy: 'outside' };
+type V4PluginOptions = PluginInsideStrategyOptions | PluginOutsideStrategyOptions;
 
-type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
+type V4PluginOptionsKebabized = KebabCasedPropertiesDeep<V4PluginOptions>;
 
-const USAGE_EXAMPLE = `  @plugin "tailwindcss-scoped-preflight" {\n    isolationStrategy: inside;\n    selector: .twp;\n  }`;
+const USAGE_EXAMPLE = `  @plugin "tailwindcss-scoped-preflight" {\n    isolation-strategy: inside;\n    selector: .twp;\n  }`;
 
 function parseCommaList(value?: string): string[] | undefined {
   return value ? value.split(',').map((s) => s.trim()) : undefined;
@@ -86,7 +87,7 @@ function resolveStrategy(options: V4PluginOptions): CSSRuleSelectorTransformer {
   }
 
   throw new Error(
-    `tailwindcss-scoped-preflight: isolationStrategy must be "inside" or "outside".\n` +
+    `tailwindcss-scoped-preflight: isolation strategy must be either "inside" or "outside".\n` +
       `Got: "${(options as { isolationStrategy: string }).isolationStrategy}". Example:\n${USAGE_EXAMPLE}`,
   );
 }
@@ -98,14 +99,14 @@ function resolveStrategy(options: V4PluginOptions): CSSRuleSelectorTransformer {
  * @example
  * ```css
  * @plugin "tailwindcss-scoped-preflight" {
- *   isolationStrategy: inside;
+ *   isolation-strategy: inside;
  *   selector: .twp;
  * }
  * ```
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
-export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions>(
+export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions|V4PluginOptionsKebabized>(
   (options) =>
     ({ addBase }) => {
       if (!options) {
@@ -113,7 +114,8 @@ export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions>(
           `tailwindcss-scoped-preflight: plugin options are required.\nExample:\n${USAGE_EXAMPLE}`,
         );
       }
-      const strategy = resolveStrategy(options);
+      const optionsFamiliar = familiarizeOptions(options);
+      const strategy = resolveStrategy(optionsFamiliar);
 
       const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
       const baseCssPath = req.resolve('tailwindcss/preflight.css');
@@ -151,6 +153,25 @@ export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions>(
       addBase(cssInJs);
     },
 );
+
+function familiarizeOptions(
+  options: V4PluginOptions | V4PluginOptionsKebabized,
+): V4PluginOptions {
+  const isKebabOptions =(options: V4PluginOptions | V4PluginOptionsKebabized): options is V4PluginOptionsKebabized  => 'isolation-strategy' in options;
+
+  if (!isKebabOptions(options)) {
+    return options;
+  }
+
+  if (options['isolation-strategy'] === 'outside') {
+    return {...options, isolationStrategy: options['isolation-strategy']};
+  }
+  return {
+    ...options,
+    isolationStrategy: options['isolation-strategy'],
+    rootStyles: options['root-styles']
+  };
+}
 
 // Default export for @plugin directive in TailwindCSS v4
 export default scopedPreflightStyles;

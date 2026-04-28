@@ -1,4 +1,5 @@
 import { N, P } from './resolve-config-QUZ9b-Gn.mjs';
+import { Schema, KebabCasedPropertiesDeep } from 'type-fest';
 
 /**
  * The source code for one or more nodes in the AST
@@ -127,31 +128,27 @@ interface StrategyBaseOptions {
     ignore?: string[];
     remove?: string[];
 }
-interface InsideStrategyOptions extends StrategyBaseOptions {
+type InsideStrategyOptions = StrategyBaseOptions & {
     except?: string;
     rootStyles?: 'move to container' | 'add :where';
-}
+};
 interface OutsideStrategyOptions extends StrategyBaseOptions {
     plus?: string;
 }
 
-interface CSSPluginBase {
+type CSSPluginBase = {
     selector: string | string[];
-    ignore?: string;
-    remove?: string;
-}
-type ExclusiveKeys<T> = keyof Omit<T, keyof StrategyBaseOptions>;
-type InsidePluginOptions = CSSPluginBase & Pick<InsideStrategyOptions, ExclusiveKeys<InsideStrategyOptions>> & {
-    [K in ExclusiveKeys<OutsideStrategyOptions>]?: never;
-} & {
-    isolationStrategy: 'inside';
+} & Schema<StrategyBaseOptions, string>;
+type OptionalNever<O> = {
+    [K in keyof O]?: never;
 };
-type OutsidePluginOptions = CSSPluginBase & Pick<OutsideStrategyOptions, ExclusiveKeys<OutsideStrategyOptions>> & {
-    [K in ExclusiveKeys<InsideStrategyOptions>]?: never;
-} & {
-    isolationStrategy: 'outside';
+type PluginStrategyOptions<strategyId extends string, TargetStrategyOptions extends StrategyBaseOptions, OtherStrategyOptionsToAddAsOptionalNever extends StrategyBaseOptions> = OptionalNever<OtherStrategyOptionsToAddAsOptionalNever> & CSSPluginBase & Omit<TargetStrategyOptions, keyof CSSPluginBase> & {
+    isolationStrategy: strategyId;
 };
-type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
+type PluginInsideStrategyOptions = PluginStrategyOptions<'inside', InsideStrategyOptions, OutsideStrategyOptions>;
+type PluginOutsideStrategyOptions = PluginStrategyOptions<'outside', OutsideStrategyOptions, InsideStrategyOptions>;
+type V4PluginOptions = PluginInsideStrategyOptions | PluginOutsideStrategyOptions;
+type V4PluginOptionsKebabized = KebabCasedPropertiesDeep<V4PluginOptions>;
 /**
  * TailwindCSS v4 plugin to scope the preflight styles to a specific container.
  *
@@ -159,13 +156,13 @@ type V4PluginOptions = InsidePluginOptions | OutsidePluginOptions;
  * @example
  * ```css
  * @plugin "tailwindcss-scoped-preflight" {
- *   isolationStrategy: inside;
+ *   isolation-strategy: inside;
  *   selector: .twp;
  * }
  * ```
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
-declare const scopedPreflightStyles: PluginWithOptions<V4PluginOptions>;
+declare const scopedPreflightStyles: PluginWithOptions<V4PluginOptions | V4PluginOptionsKebabized>;
 
 export { scopedPreflightStyles as default, scopedPreflightStyles };
