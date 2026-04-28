@@ -397,7 +397,7 @@ function isolateOutsideOfContainer(containerSelectors, options) {
 // src/index.ts
 var import_meta = {};
 var USAGE_EXAMPLE = `  @plugin "tailwindcss-scoped-preflight" {
-    isolationStrategy: inside;
+    isolation-strategy: inside;
     selector: .twp;
   }`;
 function parseCommaList(value) {
@@ -437,7 +437,7 @@ function resolveStrategy(options) {
     });
   }
   throw new Error(
-    `tailwindcss-scoped-preflight: isolationStrategy must be "inside" or "outside".
+    `tailwindcss-scoped-preflight: isolation strategy must be either "inside" or "outside".
 Got: "${options.isolationStrategy}". Example:
 ${USAGE_EXAMPLE}`
   );
@@ -451,7 +451,8 @@ Example:
 ${USAGE_EXAMPLE}`
       );
     }
-    const strategy = resolveStrategy(options);
+    const optionsFamiliar = familiarizeOptions(options);
+    const strategy = resolveStrategy(optionsFamiliar);
     const req = typeof require !== "undefined" ? require : (0, import_node_module.createRequire)(import_meta.url);
     const baseCssPath = req.resolve("tailwindcss/preflight.css");
     const baseCssStyles = import_postcss.default.parse((0, import_node_fs.readFileSync)(baseCssPath, "utf8"));
@@ -481,6 +482,20 @@ ${USAGE_EXAMPLE}`
     addBase(cssInJs);
   }
 );
+function familiarizeOptions(options) {
+  const isKebabOptions = (options2) => "isolation-strategy" in options2;
+  if (!isKebabOptions(options)) {
+    return options;
+  }
+  if (options["isolation-strategy"] === "outside") {
+    return { ...options, isolationStrategy: options["isolation-strategy"] };
+  }
+  return {
+    ...options,
+    isolationStrategy: options["isolation-strategy"],
+    rootStyles: options["root-styles"]
+  };
+}
 var index_default = scopedPreflightStyles;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
