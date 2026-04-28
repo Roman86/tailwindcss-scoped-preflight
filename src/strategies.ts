@@ -8,7 +8,7 @@ export interface StrategyBaseOptions {
 export type InsideStrategyOptions = StrategyBaseOptions & {
   except?: string;
   rootStyles?: 'move to container' | 'add :where';
-}
+};
 
 export interface OutsideStrategyOptions extends StrategyBaseOptions {
   plus?: string;

@@ -3,33 +3,43 @@ import { createRequire } from 'node:module';
 import postcss from 'postcss';
 import postcssJs from 'postcss-js';
 import plugin from 'tailwindcss/plugin';
+import type { KebabCasedPropertiesDeep, Schema } from 'type-fest';
 import {
   type CSSRuleSelectorTransformer,
   type InsideStrategyOptions,
-  type OutsideStrategyOptions,
-  type StrategyBaseOptions,
   isolateInsideOfContainer,
   isolateOutsideOfContainer,
+  type OutsideStrategyOptions,
+  type StrategyBaseOptions,
 } from './strategies.js';
-import { KebabCasedPropertiesDeep, Schema } from "type-fest";
 
 // CSS @plugin blocks pass ignore/remove as comma-separated strings, not arrays
 type CSSPluginBase = {
   selector: string | string[];
-} & Schema<StrategyBaseOptions, string>
+} & Schema<StrategyBaseOptions, string>;
 
 type OptionalNever<O> = {
   [K in keyof O]?: never;
-}
+};
 
-type PluginStrategyOptions<strategyId extends string, TargetStrategyOptions extends StrategyBaseOptions, OtherStrategyOptionsToAddAsOptionalNever extends StrategyBaseOptions> =
-  OptionalNever<OtherStrategyOptionsToAddAsOptionalNever> &
+type PluginStrategyOptions<
+  strategyId extends string,
+  TargetStrategyOptions extends StrategyBaseOptions,
+  OtherStrategyOptionsToAddAsOptionalNever extends StrategyBaseOptions,
+> = OptionalNever<OtherStrategyOptionsToAddAsOptionalNever> &
   CSSPluginBase &
-  Omit<TargetStrategyOptions, keyof CSSPluginBase> &
-  { isolationStrategy: strategyId };
+  Omit<TargetStrategyOptions, keyof CSSPluginBase> & { isolationStrategy: strategyId };
 
-type PluginInsideStrategyOptions = PluginStrategyOptions<'inside', InsideStrategyOptions, OutsideStrategyOptions>;
-type PluginOutsideStrategyOptions = PluginStrategyOptions<'outside', OutsideStrategyOptions, InsideStrategyOptions>;
+type PluginInsideStrategyOptions = PluginStrategyOptions<
+  'inside',
+  InsideStrategyOptions,
+  OutsideStrategyOptions
+>;
+type PluginOutsideStrategyOptions = PluginStrategyOptions<
+  'outside',
+  OutsideStrategyOptions,
+  InsideStrategyOptions
+>;
 
 type V4PluginOptions = PluginInsideStrategyOptions | PluginOutsideStrategyOptions;
 
@@ -51,9 +61,10 @@ function escapeSelectorColon(selector: string): string {
 function parseSelectors(raw: string | string[]): string[] {
   const list = Array.isArray(raw)
     ? raw.map((s) => s.trim()).filter(Boolean)
-    : typeof raw === 'string'
-      ? raw.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
+    : raw
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
 
   if (list.length === 0) {
     throw new Error(
@@ -106,7 +117,7 @@ function resolveStrategy(options: V4PluginOptions): CSSRuleSelectorTransformer {
  *
  * @link https://www.npmjs.com/package/tailwindcss-scoped-preflight (documentation)
  */
-export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions|V4PluginOptionsKebabized>(
+export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions | V4PluginOptionsKebabized>(
   (options) =>
     ({ addBase }) => {
       if (!options) {
@@ -154,22 +165,22 @@ export const scopedPreflightStyles = plugin.withOptions<V4PluginOptions|V4Plugin
     },
 );
 
-function familiarizeOptions(
-  options: V4PluginOptions | V4PluginOptionsKebabized,
-): V4PluginOptions {
-  const isKebabOptions =(options: V4PluginOptions | V4PluginOptionsKebabized): options is V4PluginOptionsKebabized  => 'isolation-strategy' in options;
+function familiarizeOptions(options: V4PluginOptions | V4PluginOptionsKebabized): V4PluginOptions {
+  const isKebabOptions = (
+    options: V4PluginOptions | V4PluginOptionsKebabized,
+  ): options is V4PluginOptionsKebabized => 'isolation-strategy' in options;
 
   if (!isKebabOptions(options)) {
     return options;
   }
 
   if (options['isolation-strategy'] === 'outside') {
-    return {...options, isolationStrategy: options['isolation-strategy']};
+    return { ...options, isolationStrategy: options['isolation-strategy'] };
   }
   return {
     ...options,
     isolationStrategy: options['isolation-strategy'],
-    rootStyles: options['root-styles']
+    rootStyles: options['root-styles'],
   };
 }
 
