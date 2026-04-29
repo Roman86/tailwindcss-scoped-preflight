@@ -1,6 +1,6 @@
 @import "tailwindcss/theme";
 @import "tailwindcss/utilities";
 @plugin "../../dist/index.js" {
-  isolationStrategy: inside;
+  isolation-strategy: inside;
   selector: .xl\:twp-container;
 }

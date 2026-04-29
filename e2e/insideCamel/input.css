@@ -1,7 +1,7 @@
 @import "tailwindcss/theme";
 @import "tailwindcss/utilities";
 @plugin "../../dist/index.js" {
-  isolation-strategy: outside;
-  selector: .no-twp, .no-twp-2;
-  plus: .twp;
+  isolationStrategy: inside;
+  selector: .twp;
+  except: .no-twp;
 }
