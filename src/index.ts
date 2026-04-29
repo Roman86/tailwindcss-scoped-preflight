@@ -3,7 +3,6 @@ import { createRequire } from 'node:module';
 import postcss from 'postcss';
 import postcssJs from 'postcss-js';
 import plugin from 'tailwindcss/plugin';
-import type { KebabCasedPropertiesDeep, Schema } from 'type-fest';
 import {
   type CSSRuleSelectorTransformer,
   type InsideStrategyOptions,
@@ -13,10 +12,27 @@ import {
   type StrategyBaseOptions,
 } from './strategies.js';
 
+// Replace every value type in T with `string` — CSS @plugin blocks pass
+// array-shaped options (ignore, remove) as comma-separated strings.
+type StringifyValues<T> = { [K in keyof T]: string };
+
+// Convert a camelCase string literal type to kebab-case at the type level.
+// Example: 'isolationStrategy' -> 'isolation-strategy'.
+type KebabCase<S extends string> = S extends `${infer Head}${infer Tail}`
+  ? Tail extends Uncapitalize<Tail>
+    ? `${Lowercase<Head>}${KebabCase<Tail>}`
+    : `${Lowercase<Head>}-${KebabCase<Uncapitalize<Tail>>}`
+  : S;
+
+// Map every property key of T from camelCase to kebab-case (shallow — values untouched).
+type KebabCasedProperties<T> = {
+  [K in keyof T as K extends string ? KebabCase<K> : K]: T[K];
+};
+
 // CSS @plugin blocks pass ignore/remove as comma-separated strings, not arrays
 type CSSPluginBase = {
   selector: string | string[];
-} & Schema<StrategyBaseOptions, string>;
+} & StringifyValues<StrategyBaseOptions>;
 
 type OptionalNever<O> = {
   [K in keyof O]?: never;
@@ -43,7 +59,9 @@ type PluginOutsideStrategyOptions = PluginStrategyOptions<
 
 type V4PluginOptions = PluginInsideStrategyOptions | PluginOutsideStrategyOptions;
 
-type V4PluginOptionsKebabized = KebabCasedPropertiesDeep<V4PluginOptions>;
+type V4PluginOptionsKebabized =
+  | KebabCasedProperties<PluginInsideStrategyOptions>
+  | KebabCasedProperties<PluginOutsideStrategyOptions>;
 
 const USAGE_EXAMPLE = `  @plugin "tailwindcss-scoped-preflight" {\n    isolation-strategy: inside;\n    selector: .twp;\n  }`;
 

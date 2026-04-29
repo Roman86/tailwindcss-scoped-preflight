@@ -1,5 +1,4 @@
 import { N, P } from './resolve-config-QUZ9b-Gn.mjs';
-import { Schema, KebabCasedPropertiesDeep } from 'type-fest';
 
 /**
  * The source code for one or more nodes in the AST
@@ -136,9 +135,16 @@ interface OutsideStrategyOptions extends StrategyBaseOptions {
     plus?: string;
 }
 
+type StringifyValues<T> = {
+    [K in keyof T]: string;
+};
+type KebabCase<S extends string> = S extends `${infer Head}${infer Tail}` ? Tail extends Uncapitalize<Tail> ? `${Lowercase<Head>}${KebabCase<Tail>}` : `${Lowercase<Head>}-${KebabCase<Uncapitalize<Tail>>}` : S;
+type KebabCasedProperties<T> = {
+    [K in keyof T as K extends string ? KebabCase<K> : K]: T[K];
+};
 type CSSPluginBase = {
     selector: string | string[];
-} & Schema<StrategyBaseOptions, string>;
+} & StringifyValues<StrategyBaseOptions>;
 type OptionalNever<O> = {
     [K in keyof O]?: never;
 };
@@ -148,7 +154,7 @@ type PluginStrategyOptions<strategyId extends string, TargetStrategyOptions exte
 type PluginInsideStrategyOptions = PluginStrategyOptions<'inside', InsideStrategyOptions, OutsideStrategyOptions>;
 type PluginOutsideStrategyOptions = PluginStrategyOptions<'outside', OutsideStrategyOptions, InsideStrategyOptions>;
 type V4PluginOptions = PluginInsideStrategyOptions | PluginOutsideStrategyOptions;
-type V4PluginOptionsKebabized = KebabCasedPropertiesDeep<V4PluginOptions>;
+type V4PluginOptionsKebabized = KebabCasedProperties<PluginInsideStrategyOptions> | KebabCasedProperties<PluginOutsideStrategyOptions>;
 /**
  * TailwindCSS v4 plugin to scope the preflight styles to a specific container.
  *
