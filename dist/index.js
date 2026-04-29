@@ -400,7 +400,7 @@ function escapeSelectorColon(selector) {
   return selector.replace(/(?<!\\):/g, "\\:");
 }
 function parseSelectors(raw) {
-  const list = Array.isArray(raw) ? raw.map((s) => s.trim()).filter(Boolean) : typeof raw === "string" ? raw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const list = Array.isArray(raw) ? raw.map((s) => s.trim()).filter(Boolean) : raw.split(",").map((s) => s.trim()).filter(Boolean);
   if (list.length === 0) {
     throw new Error(
       `tailwindcss-scoped-preflight: selector is required.
